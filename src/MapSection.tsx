@@ -299,7 +299,7 @@ export function MapSection({ tourState }: MapSectionProps) {
       />
 
       <div className="grid grid-cols-1 lg:min-h-[640px] lg:grid-cols-12">
-        <div className="relative h-[42vh] min-h-[240px] sm:h-[48vh] sm:min-h-[280px] lg:col-span-7 lg:h-auto lg:min-h-[640px]">
+        <div className="relative h-[48vh] min-h-[280px] sm:h-[50vh] sm:min-h-[300px] lg:col-span-7 lg:h-auto lg:min-h-[640px]">
           {mapReady ? (
             <Suspense fallback={<MapLoading />}>
               <TourMap

@@ -114,7 +114,7 @@ export default function TourMap({
         className="h-full w-full"
         scrollWheelZoom={false}
         zoomControl={false}
-        maxZoom={20}
+        maxZoom={35}
       >
         <MinimalBasemap />
         <ZoomControl position="topright" />

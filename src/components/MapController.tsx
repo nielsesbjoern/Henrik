@@ -1,6 +1,6 @@
 import { useEffect, useRef } from "react";
 import { useMap } from "react-leaflet";
-import { latLngBounds } from "leaflet";
+import { latLngBounds, type Map as LeafletMap } from "leaflet";
 import type { RouteStop } from "../utils/route";
 import type { CityId } from "../data/types";
 
@@ -72,22 +72,74 @@ function prefersReducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
-function fitPadding(stopCount: number): {
+/**
+ * Padding as a share of the live map size so dense tours still fit on short
+ * mobile viewports (desktop keeps the higher / slightly-right framing).
+ * Leaflet Point = [x, y].
+ */
+function fitPadding(
+  map: LeafletMap,
+  stopCount: number,
+): {
   paddingTopLeft: [number, number];
   paddingBottomRight: [number, number];
 } {
-  const isMobile = window.matchMedia("(max-width: 768px)").matches;
-  // Leaflet Point = [x, y] → topLeft [left, top], bottomRight [right, bottom]
-  // More left + more bottom = route sits higher and a bit to the right.
+  const { x: w, y: h } = map.getSize();
+  const isMobile = w < 720 || window.matchMedia("(max-width: 768px)").matches;
+  // Dense Lisboa (16) can sit closer; Cascais/short keep a bit more air.
   const dense = stopCount >= 12;
+
   if (isMobile) {
-    return dense
-      ? { paddingTopLeft: [48, 8], paddingBottomRight: [20, 200] }
-      : { paddingTopLeft: [52, 12], paddingBottomRight: [24, 208] };
+    if (dense) {
+      return {
+        paddingTopLeft: [16, 12],
+        paddingBottomRight: [16, 48],
+      };
+    }
+    const top = Math.max(12, Math.round(h * 0.05));
+    const bottom = Math.min(96, Math.max(56, Math.round(h * 0.2)));
+    const left = Math.max(20, Math.round(w * 0.07));
+    const right = Math.max(16, Math.round(w * 0.05));
+    return {
+      paddingTopLeft: [left, top],
+      paddingBottomRight: [right, bottom],
+    };
   }
+
+  // Desktop: dense Lisboa — slight ease out from the last step.
   return dense
-    ? { paddingTopLeft: [72, 12], paddingBottomRight: [28, 168] }
-    : { paddingTopLeft: [76, 16], paddingBottomRight: [32, 176] };
+    ? { paddingTopLeft: [40, 16], paddingBottomRight: [28, 74] }
+    : { paddingTopLeft: [72, 12], paddingBottomRight: [28, 168] };
+}
+
+function fitRouteToMap(
+  map: LeafletMap,
+  routeStops: RouteStop[],
+  options: { animate: boolean; duration?: number },
+) {
+  if (routeStops.length === 0) return;
+  map.invalidateSize();
+  let bounds = latLngBounds(routeStops.map((s) => [s.lat, s.lng]));
+  // Neutral bounds — one notch out from the last pull-in.
+  if (routeStops.length >= 12) {
+    bounds = bounds.pad(0.02);
+  }
+  const padding = fitPadding(map, routeStops.length);
+  const base = {
+    ...padding,
+    maxZoom: denseMaxZoom(routeStops.length),
+    animate: options.animate,
+  };
+
+  if (options.duration != null && options.animate) {
+    map.flyToBounds(bounds, { ...base, duration: options.duration });
+  } else {
+    map.fitBounds(bounds, base);
+  }
+}
+
+function denseMaxZoom(stopCount: number): number {
+  return stopCount >= 12 ? 35 : 16;
 }
 
 export function MapController({
@@ -101,14 +153,12 @@ export function MapController({
   const prevCityIdRef = useRef(cityId);
   const prevFitNonceRef = useRef(fitNonce);
   const skipFlyAfterFitRef = useRef(false);
+  const routeStopsRef = useRef(routeStops);
+  routeStopsRef.current = routeStops;
 
   useEffect(() => {
     if (routeStops.length === 0) return;
 
-    map.invalidateSize();
-
-    const bounds = latLngBounds(routeStops.map((s) => [s.lat, s.lng]));
-    const padding = fitPadding(routeStops.length);
     const citySwitched = prevCityIdRef.current !== cityId;
     prevCityIdRef.current = cityId;
 
@@ -116,24 +166,35 @@ export function MapController({
     prevFitNonceRef.current = fitNonce;
 
     const reduced = prefersReducedMotion();
-    const base = {
-      ...padding,
-      maxZoom: 17,
-      animate: !reduced,
-    };
-
     skipFlyAfterFitRef.current = true;
 
-    if (citySwitched || fitRequested) {
-      map.flyToBounds(bounds, {
-        ...base,
-        duration: reduced ? 0 : fitRequested ? 0.8 : 1.2,
+    const runFit = () => {
+      fitRouteToMap(map, routeStops, {
+        animate: !reduced && (citySwitched || fitRequested),
+        duration: reduced ? 0 : fitRequested ? 0.8 : citySwitched ? 1.2 : undefined,
       });
-      return;
-    }
+    };
 
-    map.fitBounds(bounds, base);
+    // Mobile layout often settles one frame after mount / tour switch.
+    runFit();
+    const raf = requestAnimationFrame(() => {
+      runFit();
+    });
+
+    return () => cancelAnimationFrame(raf);
   }, [map, resetKey, routeStops, cityId, fitNonce]);
+
+  // Re-fit when the map pane is resized (orientation / accordion / keyboard).
+  useEffect(() => {
+    const onResize = () => {
+      fitRouteToMap(map, routeStopsRef.current, { animate: false });
+      skipFlyAfterFitRef.current = true;
+    };
+    map.on("resize", onResize);
+    return () => {
+      map.off("resize", onResize);
+    };
+  }, [map]);
 
   useEffect(() => {
     if (!flyToStop) return;
