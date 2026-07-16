@@ -66,6 +66,12 @@ export const en: Translations = {
     expand: "Open case files",
     collapse: "Close case files",
     collapsedHint: "Log, food & notes",
+    teaserEyebrow: "Dig deeper",
+    teaserLead: "Collect stamps, tick Henrik’s dishes, jot down clues.",
+    protocolTeaser: "Checklist & stamps",
+    foodTeaser: "Menu on the route",
+    notesTeaser: "Your investigator notes",
+    openCta: "Open",
   },
   infoCards: {
     title: "Case notes",

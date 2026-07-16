@@ -72,22 +72,22 @@ function prefersReducedMotion(): boolean {
   return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 }
 
-function fitPadding(): {
+function fitPadding(stopCount: number): {
   paddingTopLeft: [number, number];
   paddingBottomRight: [number, number];
 } {
   const isMobile = window.matchMedia("(max-width: 768px)").matches;
-  // Marker radius ~22px + zoom controls / Google Maps chip / safe edge
+  // Leaflet Point = [x, y] → topLeft [left, top], bottomRight [right, bottom]
+  // More left + more bottom = route sits higher and a bit to the right.
+  const dense = stopCount >= 12;
   if (isMobile) {
-    return {
-      paddingTopLeft: [64, 56],
-      paddingBottomRight: [120, 56],
-    };
+    return dense
+      ? { paddingTopLeft: [48, 8], paddingBottomRight: [20, 200] }
+      : { paddingTopLeft: [52, 12], paddingBottomRight: [24, 208] };
   }
-  return {
-    paddingTopLeft: [80, 72],
-    paddingBottomRight: [96, 72],
-  };
+  return dense
+    ? { paddingTopLeft: [72, 12], paddingBottomRight: [28, 168] }
+    : { paddingTopLeft: [76, 16], paddingBottomRight: [32, 176] };
 }
 
 export function MapController({
@@ -108,7 +108,7 @@ export function MapController({
     map.invalidateSize();
 
     const bounds = latLngBounds(routeStops.map((s) => [s.lat, s.lng]));
-    const padding = fitPadding();
+    const padding = fitPadding(routeStops.length);
     const citySwitched = prevCityIdRef.current !== cityId;
     prevCityIdRef.current = cityId;
 
@@ -118,7 +118,7 @@ export function MapController({
     const reduced = prefersReducedMotion();
     const base = {
       ...padding,
-      maxZoom: 16,
+      maxZoom: 17,
       animate: !reduced,
     };
 

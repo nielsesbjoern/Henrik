@@ -66,6 +66,12 @@ export const de: Translations = {
     expand: "Akten öffnen",
     collapse: "Akten schließen",
     collapsedHint: "Protokoll, Essen & Notizen",
+    teaserEyebrow: "Akte vertiefen",
+    teaserLead: "Stempel sammeln, Henriks Speisen abhaken, Spuren notieren.",
+    protocolTeaser: "Laufzettel & Stempel",
+    foodTeaser: "Speisekarte unterwegs",
+    notesTeaser: "Eigene Ermittlernotizen",
+    openCta: "Öffnen",
   },
   infoCards: {
     title: "Aktennotizen",

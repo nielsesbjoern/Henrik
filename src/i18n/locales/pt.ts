@@ -66,6 +66,12 @@ export const pt: Translations = {
     expand: "Abrir ficheiros",
     collapse: "Fechar ficheiros",
     collapsedHint: "Protocolo, comida e notas",
+    teaserEyebrow: "Aprofundar o processo",
+    teaserLead: "Carimbar locais, marcar pratos do Henrik, anotar pistas.",
+    protocolTeaser: "Folha de rota e carimbos",
+    foodTeaser: "Menu pelo caminho",
+    notesTeaser: "Notas de investigação",
+    openCta: "Abrir",
   },
   infoCards: {
     title: "Notas do processo",

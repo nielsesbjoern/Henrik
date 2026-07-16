@@ -1,8 +1,19 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
-  <rect width="512" height="512" fill="#fbfaf7"/>
-  <circle cx="256" cy="256" r="188" fill="none" stroke="#9e2b25" stroke-width="28" stroke-dasharray="980 160" stroke-dashoffset="40" opacity="0.92"/>
-  <circle cx="256" cy="256" r="152" fill="none" stroke="#14549e" stroke-width="10" opacity="0.85"/>
-  <text x="256" y="236" text-anchor="middle" font-family="Georgia, serif" font-size="54" font-weight="700" fill="#17150f">HF</text>
-  <text x="256" y="292" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="28" letter-spacing="4" fill="#14549e">LISBOA</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Luis Sellano">
+  <rect width="512" height="512" fill="#061418"/>
+  <defs>
+    <linearGradient id="g" x1="256" y1="0" x2="256" y2="512" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1a353c"/>
+      <stop offset="0.55" stop-color="#0a1c22"/>
+      <stop offset="1" stop-color="#061418"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#g)"/>
+
+  <!-- L -->
+  <path fill="#e8eef0" d="M120 136h34v196H244v34H120z"/>
+  <!-- S -->
+  <path fill="#e8eef0" fill-rule="evenodd" d="
+    M396 180c0-30-25-50-62-50-34 0-59 18-65 46l32 9c3-15 15-25 33-25 17 0 27 8 27 20 0 14-9 20-34 27l-18 6c-33 10-52 25-52 55 0 33 26 54 63 54 36 0 63-18 68-47l-33-8c-4 16-15 26-34 26-18 0-30-9-30-22 0-13 8-20 34-28l19-6c35-10 53-27 53-56z"/>
+
+  <rect x="152" y="394" width="208" height="22" rx="6" fill="#c45c2c"/>
 </svg>

@@ -133,6 +133,12 @@ export interface Translations {
     expand: string;
     collapse: string;
     collapsedHint: string;
+    teaserEyebrow: string;
+    teaserLead: string;
+    protocolTeaser: string;
+    foodTeaser: string;
+    notesTeaser: string;
+    openCta: string;
   };
   infoCards: {
     title: string;
