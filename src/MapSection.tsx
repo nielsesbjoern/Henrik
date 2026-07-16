@@ -1,5 +1,13 @@
-import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
-import { getRouteStops, type TourType } from "./utils/tour";
+import {
+  lazy,
+  Suspense,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { getRouteStops, tourIdToType, type TourType } from "./utils/route";
 import { TourControls } from "./components/TourControls";
 import { WorkspaceTabs } from "./components/WorkspaceTabs";
 import { NextStopNavigator } from "./components/NextStopNavigator";
@@ -12,8 +20,9 @@ import { InvestigatorNotes } from "./components/InvestigatorNotes";
 import { useGeolocation } from "./hooks/useGeolocation";
 import { useEvidencePhotos } from "./hooks/useEvidencePhotos";
 import { isStopUnlocked, getNextUnsolvedStop } from "./utils/riddle";
-import type { RouteStop } from "./utils/tour";
+import type { RouteStop } from "./utils/route";
 import type { TourState, VisitedRecord } from "./hooks/useTourState";
+import type { CityId } from "./data/types";
 import { useI18n } from "./i18n";
 
 const TourMap = lazy(() => import("./components/TourMap"));
@@ -36,19 +45,27 @@ interface MapSectionProps {
 }
 
 export function MapSection({ tourState }: MapSectionProps) {
-  const { stops } = useI18n();
-  const [tourType, setTourType] = useState<TourType>("full");
+  const { t, stops } = useI18n();
   const [routeReversed, setRouteReversed] = useState(false);
   const [selectedStop, setSelectedStop] = useState<RouteStop | null>(null);
   const [tourMode, setTourMode] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const {
+    cityId,
+    setCityId,
+    tourId,
+    setTourId,
+    city,
+    activeTour,
     solved,
     solvedIds,
     visited,
     stampedIds,
     foodChecked,
     allFoodComplete,
+    globalSightedCount,
+    totalStopCount,
+    allCitiesComplete,
     freeTour,
     toggleVisited,
     submitAnswer,
@@ -70,16 +87,21 @@ export function MapSection({ tourState }: MapSectionProps) {
     clearPhotos,
   } = useEvidencePhotos();
   const [mapReady, setMapReady] = useState(false);
+  const [protocolRevealSignal, setProtocolRevealSignal] = useState(0);
+  const wasRouteCompleteRef = useRef(false);
+  const pendingStopIdRef = useRef<number | null>(null);
 
+  const tourType: TourType = tourIdToType(tourId);
   const isRiddleTour = tourType === "riddle";
   const geoEnabled = isRiddleTour && tourMode;
   const { position, error: geoError } = useGeolocation({ enabled: geoEnabled });
 
   const routeStops = useMemo(
-    () => getRouteStops(stops, tourType, routeReversed),
-    [stops, tourType, routeReversed],
+    () => getRouteStops(stops, tourId, routeReversed),
+    [stops, tourId, routeReversed],
   );
-  const resetKey = `${tourType}-${routeReversed}-${routeStops.map((s) => s.id).join("-")}`;
+
+  const resetKey = `${cityId}-${tourId}-${routeReversed}-${routeStops.map((s) => s.id).join("-")}`;
   const currentStartName = routeStops[0]?.name ?? "";
   const stampedRecord = useMemo(
     () => mergeStampedRecord(solved, visited),
@@ -95,6 +117,24 @@ export function MapSection({ tourState }: MapSectionProps) {
     () => routeStops.filter((s) => stampedIds.has(s.id)).length,
     [routeStops, stampedIds],
   );
+
+  const isRouteComplete =
+    routeStops.length > 0 && stampedInRoute === routeStops.length;
+
+  useEffect(() => {
+    wasRouteCompleteRef.current = false;
+  }, [tourId, routeReversed]);
+
+  useEffect(() => {
+    if (isRouteComplete && !wasRouteCompleteRef.current) {
+      wasRouteCompleteRef.current = true;
+      setSelectedStop(null);
+      setProtocolRevealSignal((n) => n + 1);
+    }
+    if (!isRouteComplete) {
+      wasRouteCompleteRef.current = false;
+    }
+  }, [isRouteComplete]);
 
   const activeStopId = tourMode
     ? routeStops[currentIndex]?.id ?? null
@@ -115,14 +155,41 @@ export function MapSection({ tourState }: MapSectionProps) {
     setSelectedStop(null);
     setCurrentIndex(0);
     setTourMode(false);
-  }, [stops]);
+    setRouteReversed(false);
+  }, [cityId]);
 
-  const handleTourTypeChange = useCallback((type: TourType) => {
-    setTourType(type);
+  useEffect(() => {
+    const pendingId = pendingStopIdRef.current;
+    if (pendingId === null) return;
+    const stop = routeStops.find((s) => s.id === pendingId);
+    if (!stop) return;
+    pendingStopIdRef.current = null;
+    setSelectedStop(stop);
+  }, [routeStops, cityId]);
+
+  useEffect(() => {
     setSelectedStop(null);
     setCurrentIndex(0);
     setTourMode(false);
-  }, []);
+  }, [stops]);
+
+  const handleCityChange = useCallback(
+    (next: CityId) => {
+      pendingStopIdRef.current = null;
+      setCityId(next);
+    },
+    [setCityId],
+  );
+
+  const handleTourIdChange = useCallback(
+    (next: string) => {
+      setTourId(next);
+      setSelectedStop(null);
+      setCurrentIndex(0);
+      setTourMode(false);
+    },
+    [setTourId],
+  );
 
   const handleRouteReversedChange = useCallback((reversed: boolean) => {
     setRouteReversed(reversed);
@@ -158,16 +225,22 @@ export function MapSection({ tourState }: MapSectionProps) {
       const base = stops.find((s) => s.id === stopId);
       if (!base) return;
 
-      const routeStop: RouteStop =
+      document.getElementById("tour")?.scrollIntoView({ behavior: "smooth" });
+
+      if (base.cityId !== cityId) {
+        pendingStopIdRef.current = stopId;
+        setCityId(base.cityId);
+        return;
+      }
+
+      const routeStop =
         routeStops.find((s) => s.id === stopId) ?? {
           ...base,
-          tourNumber: stops.findIndex((s) => s.id === stopId) + 1,
+          tourNumber: routeStops.findIndex((s) => s.id === stopId) + 1 || 1,
         };
-
       handleStopSelect(routeStop);
-      document.getElementById("tour")?.scrollIntoView({ behavior: "smooth" });
     },
-    [stops, routeStops, handleStopSelect],
+    [stops, routeStops, handleStopSelect, cityId, setCityId],
   );
 
   const handleTourToggle = useCallback(() => {
@@ -203,13 +276,18 @@ export function MapSection({ tourState }: MapSectionProps) {
   }, [resetProgress, clearPhotos]);
 
   return (
-    <section id="tour" className="border-y border-[color:var(--color-control-border)]">
+    <section id="tour" className="border-b border-[color:var(--color-control-border)]">
       <TourControls
-        tourType={tourType}
-        onTourTypeChange={handleTourTypeChange}
+        cityId={cityId}
+        onCityChange={handleCityChange}
+        stampedIds={stampedIds}
+        tours={city.tours}
+        tourId={tourId}
+        onTourIdChange={handleTourIdChange}
         routeReversed={routeReversed}
         onRouteReversedChange={handleRouteReversedChange}
         currentStartName={currentStartName}
+        tourStats={t.tours[activeTour.id]?.stats ?? ""}
         isRiddleTour={isRiddleTour}
         freeTour={freeTour}
         onFreeTourToggle={toggleFreeTour}
@@ -217,6 +295,7 @@ export function MapSection({ tourState }: MapSectionProps) {
         onTourModeToggle={handleTourToggle}
         visitedCount={stampedInRoute}
         totalStops={routeStops.length}
+        hideTourTabs={city.tours.length <= 1}
       />
 
       <div className="grid grid-cols-1 lg:min-h-[640px] lg:grid-cols-12">
@@ -231,6 +310,8 @@ export function MapSection({ tourState }: MapSectionProps) {
                 onStopSelect={handleStopSelect}
                 flyToStop={flyToStop}
                 resetKey={resetKey}
+                cityId={cityId}
+                mapCenter={city.center}
               />
             </Suspense>
           ) : (
@@ -293,16 +374,21 @@ export function MapSection({ tourState }: MapSectionProps) {
       </div>
 
       <WorkspaceTabs
+        revealProtocolSignal={protocolRevealSignal}
         protocol={
           <Laufzettel
             tourType={tourType}
             routeStops={routeStops}
+            cityId={cityId}
             solved={solved}
             visited={visited}
             photos={photos}
             animatingId={animatingId}
             completionAnimating={completionAnimating}
             allFoodComplete={allFoodComplete}
+            globalSightedCount={globalSightedCount}
+            totalStopCount={totalStopCount}
+            allCitiesComplete={allCitiesComplete}
             onCompletionShown={triggerCompletionAnimation}
             onShare={shareProgress}
             onReset={handleResetProgress}
@@ -316,9 +402,10 @@ export function MapSection({ tourState }: MapSectionProps) {
                 foodChecked={foodChecked}
                 onToggleFood={toggleFood}
                 onNavigateToStop={handleNavigateToStop}
+                cityId={cityId}
               />
             </div>
-            <GastroGuide />
+            <GastroGuide cityId={cityId} />
           </div>
         }
         notes={

@@ -5,7 +5,7 @@ export const stopsDe: Record<number, StopTranslation> = {
     name: "Rua do Almada – Henriks Antiquariat",
     bookRef: "Alle Bände",
     description:
-      "Hier beginnt alles: Henrik erbt von seinem unbekannten Onkel Martin ein baufälliges Wohnhaus samt Antiquariat – mit der Klausel, nie zu verkaufen. Hinter dem Chaos steckt System: Martin sammelte jahrelang Gegenstände, die auf ungelöste Verbrechen hinweisen. Am ersten Tag bietet ein Investor 1,1 Millionen, am ersten Abend gibt es den ersten Mordanschlag. Jeder Band startet mit einem Fund aus diesem Laden. (Standort: Fan-Verortung, keine offizielle Adresse.)",
+      "Hier beginnt Henriks Geschichte: Er erbt von seinem unbekannten Onkel Martin ein baufälliges Wohnhaus samt Antiquariat – mit der Klausel, nie zu verkaufen. Hinter dem Chaos steckt System: Martin sammelte jahrelang Gegenstände, die auf ungelöste Verbrechen hinweisen. Jeder Band startet mit einem Fund aus diesem Laden. Westlich lohnt der Abstecher zum Miradouro de Santa Catarina. (Standort: Fan-Verortung, keine offizielle Adresse.)",
     quote: {
       text: "Der Duft von altem Papier, gegerbtem Leder und Bienenwachs schlug ihm entgegen. Das Antiquariat war kein gewöhnlicher Laden – es war ein Portal in die dunkelsten Kapitel von Lissabons Geschichte.",
       attribution: "Luis Sellano, Portugiesisches Erbe (Band 1)",
@@ -27,7 +27,7 @@ export const stopsDe: Record<number, StopTranslation> = {
     name: "A Brasileira",
     bookRef: "Band 1 / Stadttour",
     description:
-      "Henriks Belohnung nach dem Anstieg: Bica und Pastel de Nata. Hier trifft er Adriana aus Band 1, 'die alle Blicke auf sich lenkt' – oder eben Fernando Pessoa als Bronzestatue, neben der ein Stuhl frei ist.",
+      "Henriks Belohnung nach dem Anstieg aus der Bica: Bica und Pastel de Nata. Hier trifft er Adriana aus Band 1, 'die alle Blicke auf sich lenkt' – oder Fernando Pessoa als Bronzestatue, neben der ein Stuhl frei ist.",
     quote: {
       text: "Ein Bica im A Brasileira war für Henrik kein bloßer Kaffeegenuss. Es war ein heiliges Ritual des Innehaltens inmitten des rastlosen literarischen Treibens im Chiado.",
       attribution: "Luis Sellano, Portugiesische Sehnsucht (Band 6)",
@@ -59,19 +59,19 @@ export const stopsDe: Record<number, StopTranslation> = {
     name: "Elevador de Santa Justa",
     bookRef: "Stadttour",
     description:
-      "Für Henrik ein 'Wunderwerk der Aufzugskunst' – aber er selbst nimmt lieber die Rua Garrett, weil man dort 'den besseren Überblick auf vermeintliche Verfolger behält'. Die Schlange kann man sich also wie Henrik sparen.",
+      "Zwischen Chiado und Baixa: ein 'Wunderwerk der Aufzugskunst'. Henrik selbst nimmt lieber die Rua Garrett – 'besserer Überblick auf vermeintliche Verfolger'. Die Schlange kann man sich also sparen.",
   },
   6: {
     name: "Rossio & Largo de São Domingos",
-    bookRef: "Band 2 (Eröffnung)",
+    bookRef: "Band 2 (Eröffnung) / Stadttour",
     description:
-      "Der Auftakt von 'Portugiesische Rache': Henrik drückt die Hände auf die Stichwunde eines Mannes, der drei Stunden zuvor ein Buch bei ihm gekauft hat – das Blut 'dunkel wie Portwein und klebrig wie der Kirschlikör, den sie unten am Largo de São Domingos ausschenkten'. Der Ginjinha-Stand existiert wirklich – Pflichtstopp. Daneben das Wellenmosaik des Rossio.",
+      "Pulsierendes Zentrum, wenige Schritte vom Bahnhof: Ginjinha gegenüber der Kirche – mit oder ohne Frucht. Blick in die Igreja de São Domingos unter dem lachsfarbenen Kuppelgewölbe; Helena trifft sich gerne in Sakralbauten zum Flüstern. Daneben das Wellenmosaik – und der Auftakt von 'Portugiesische Rache', wo das Blut 'klebrig wie der Kirschlikör' am Largo aussieht.",
   },
   7: {
     name: "Rua Augusta & Arco da Rua Augusta",
     bookRef: "Band 1",
     description:
-      "Die schnurgerade Prachtstraße, die Henrik einen halben Kilometer hinunter zum 'pompösen Triumphbogen' führt – sein ständiger Übergang zwischen Touristen-Lissabon und den dunklen Gassen seiner Ermittlungen.",
+      "Der letzte Schwenk Richtung Fluss: die schnurgerade Prachtstraße bis zum weißen Triumphbogen – Henriks Übergang zurück ins Touristen-Baixa, bevor der Tag am Tejo endet.",
     quote: {
       text: "Der massive Triumphbogen ragte wie ein steinernes Mahnmal in den makellos blauen Himmel. Er erinnerte jeden Lissaboner daran, dass aus der Asche stets neues Leben erwächst.",
       attribution: "Luis Sellano, Portugiesisches Blut (Band 5)",
@@ -85,9 +85,9 @@ export const stopsDe: Record<number, StopTranslation> = {
   },
   8: {
     name: "Praça do Comércio",
-    bookRef: "Band 1",
+    bookRef: "Band 1 / Stadttour",
     description:
-      "Eine der ruhigsten Szenen der Reihe: Henrik kauft an einer Bude Wasser zwischen Touristen, die auf die Linie 28 warten, überquert den sonnenüberfluteten Platz und setzt sich auf die Steinstufen direkt am Tejo. Sein Ort zum Durchatmen.",
+      "Tourabschluss am Tejo: Henrik kauft hier Wasser zwischen Touristen, setzt sich auf die Steinstufen und atmet durch. Zurück durch den Arco ins Baixa – und wer will wie Henrik noch ein Eis im Amorino, bevor der Tag endet.",
     quote: {
       text: "Der Praça do Comércio öffnete sich zum Fluss hin wie eine ausgestreckte Hand, die Reisende willkommen hieß und Geister der Seefahrer-Vergangenheit heraufbeschwor.",
       attribution: "Luis Sellano, Portugiesischer Schwur (Band 4)",
@@ -103,7 +103,7 @@ export const stopsDe: Record<number, StopTranslation> = {
     name: "Rua do Vigário – Mittagspause",
     bookRef: "Stadttour",
     description:
-      "Henriks Restauranttipp: das von außen völlig unscheinbare Tasco do Vigário, auf dessen Gehsteig genau zwei Tische passen. Seine Bestellung: gegrillter Tintenfisch und Vinho Verde. 'Ist ein Platz frei, sollte man nicht zögern.'",
+      "Tief in der Alfama: Henriks Restauranttipp – das von außen völlig unscheinbare Tasco do Vigário, auf dessen Gehsteig genau zwei Tische passen. Seine Bestellung: gegrillter Tintenfisch und Vinho Verde. 'Ist ein Platz frei, sollte man nicht zögern.' Danach geht's Richtung Baixa und Tejo.",
     quote: {
       text: "Im Tasco do Vigário war die Zeit stehengeblieben. Der Bacalhau schwamm im feinsten Olivenöl des Alentejo, und der gekühlte Vinho Verde löschte jeden Zweifel.",
       attribution: "Luis Sellano, Portugiesische Tränen (Band 3)",
@@ -119,7 +119,7 @@ export const stopsDe: Record<number, StopTranslation> = {
     name: "Igreja de Santo Estêvão",
     bookRef: "Band 7 / Stadttour",
     description:
-      "Das Herz der Alfama, Helenas Wohnviertel. Direkt unterhalb liegt das öffentliche Waschhaus – wer es findet, 'zählt zu den besonders guten Spürnasen'. Der Blick auf diese Kirche ziert das Cover von Band 7 ('Portugiesisches Gift').",
+      "Abstieg vom Miradouro ins Herz der Alfama, Helenas Wohnviertel. Direkt unterhalb liegt das öffentliche Waschhaus – wer es findet, 'zählt zu den besonders guten Spürnasen'. Der Blick auf diese Kirche ziert das Cover von Band 7 ('Portugiesisches Gift').",
     quote: {
       text: "Unterhalb der weißen Steinfassade von Santo Estêvão roch es nach frisch gewaschenem Leinen, kaltem Stein und dem salzigen Atem des Flusses.",
       attribution: "Luis Sellano, Portugiesisches Erbe (Band 1)",
@@ -135,7 +135,7 @@ export const stopsDe: Record<number, StopTranslation> = {
     name: "Miradouro das Portas do Sol",
     bookRef: "Stadttour",
     description:
-      "Der Blick über Henriks Revier – die Dächer der Alfama bis zum Tejo. Ab hier gilt seine Regel: treiben lassen, ohne Stadtplan, 'dann wird es am spannendsten'.",
+      "Nach dem Flohmarkt zurück an den Aussichtspunkt: Blick über Henriks Revier – die Dächer der Alfama bis zum Tejo. Ab hier gilt seine Regel: treiben lassen, ohne Stadtplan, 'dann wird es am spannendsten'.",
     quote: {
       text: "Lass dich einfach treiben, hatte Henrik gesagt. Die Alfama findet ihren Weg in dein Herz schon von ganz allein. Du musst nur aufhören zu lenken.",
       attribution: "Luis Sellano, Portugiesische Rache (Band 2)",
@@ -158,7 +158,7 @@ export const stopsDe: Record<number, StopTranslation> = {
     name: "Castelo de São Jorge",
     bookRef: "Band 1",
     description:
-      "Die maurische Burg über der Altstadt – die Topographie, durch die in Band 1 Verfolgungsjagden über Glockentürme, Kirchdächer, Weinkeller und Beichtstühle führen. Bester Rundumblick der Stadt.",
+      "Vom Martim Moniz den Hügel hinauf: die maurische Burg über der Altstadt – Topographie für Verfolgungsjagden in Band 1. Bester Rundumblick, bevor es weiter nach Graça und hinunter in die Alfama geht.",
     quote: {
       text: "Das Castelo thronte über der Stadt wie ein steinerner Wächter einer längst vergangenen Epoche, dessen Mauern mehr Geheimnisse bargen, als die Lebenden jemals ertragen könnten.",
       attribution: "Luis Sellano, Portugiesisches Erbe (Band 1)",
@@ -197,5 +197,93 @@ export const stopsDe: Record<number, StopTranslation> = {
       text: "Die gelbe Holzbahn knirschte um die Ecke wie ein Geist aus einer anderen Zeit. Wer in Band 10 mitfuhr, wusste: In Lissabon ist der Tatort manchmal unterwegs.",
       attribution: "Luis Sellano, Band 10",
     },
+  },
+
+  // —— Cascais (Band 8 · Romankarte) ——
+  101: {
+    name: "Bahnhof Cascais",
+    bookRef: "Band 8 (Romankarte)",
+    description:
+      "Endstation der Linha de Cascais aus Lissabon — auf der Romankarte der Knotenpunkt, von dem sich alle Schauplätze erschließen. Hier kommen Henrik und die Ermittlung buchstäblich in Cascais an; die Bahnlinie ist zugleich die erzählerische Nabelschnur zurück in die Gassen Lissabons, in denen das Geheimnis seinen Ursprung hat.",
+    riddle: {
+      question: "Wie viele Gleise hat der Bahnhof Cascais?",
+      answers: [],
+      answerType: "number",
+      tolerance: 0,
+      hint: "Am Ende der Bahnsteige zählen.",
+      verified: false,
+    },
+  },
+  102: {
+    name: "Praia da Duquesa — der Tatort",
+    bookRef: "Band 8 (Romankarte: 'Tatort')",
+    description:
+      "Auf der Verlagskarte ausdrücklich als TATORT markiert: Hier liegt die tote Frau am Strand, mit der der Band beginnt — 'die Gerichtsmedizin schließt Fremdeinwirkung nicht aus'. Zwei Gehminuten vom Bahnhof, überblickt von Hotelterrassen: ein öffentlicher, sonniger Ort, an dem ein Verbrechen zunächst wie ein Unglück aussieht.",
+    riddle: {
+      question: "Wie viele Strandbars/Kioske stehen direkt an der Praia da Duquesa?",
+      answers: [],
+      answerType: "number",
+      tolerance: 1,
+      hint: "Nur die Bauten direkt am Sand zählen.",
+      verified: false,
+    },
+  },
+  103: {
+    name: "Pequeno Paraíso Hotel",
+    bookRef: "Band 8 (Romankarte)",
+    description:
+      "Das 'kleine Paradies' — ein fiktives Hotel nahe der Altstadt, dessen Name das ironische Grundmotiv des Bandes trägt: Sommer, Sonne, Tod am Strand. Die Romankarte platziert es zwischen Bahnhof und Irish Pub; die genaue Adresse existiert nicht.",
+  },
+  104: {
+    name: "Irish Pub O'Learys",
+    bookRef: "Band 8 (Romankarte) — reales Vorbild vermutet",
+    description:
+      "Der Pub aus dem Roman. An exakt dieser Stelle, der Praça 5 de Outubro, liegt real das O'Neill's Irish Pub — Sellano verfremdet reale Orte gern mit leicht geänderten Namen. Bis zur Verifizierung vor Ort als fiktiv geführt; wer mag, prüft bei einem Pint, ob die Beschreibung im Buch zur Einrichtung passt.",
+    riddle: {
+      question: "Wie heißt der Irish Pub an der Praça 5 de Outubro wirklich?",
+      answers: ["o'neill's"],
+      answerType: "choice",
+      choices: ["O'Learys", "O'Neill's", "O'Connor's"],
+      hint: "Schild über der Tür — und ein Schmunzeln über Sellanos Verfremdung.",
+      verified: false,
+    },
+  },
+  105: {
+    name: "Rachels Wohnung",
+    bookRef: "Band 8 (Romankarte)",
+    description:
+      "Der Wohnort der Romanfigur Rachel, laut Karte in den Wohnstraßen zwischen Polizeistation und Bahnhof. Keine reale Adresse — die Markierung zeigt das Viertel, nicht ein Haus. Beim Vorbeigehen bekommt man trotzdem ein Gefühl dafür, wie nah in diesem Ort alles beieinanderliegt: Tatort, Zeugen, Ermittler.",
+  },
+  106: {
+    name: "Polizeistation Cascais (PSP)",
+    bookRef: "Band 8 (Romankarte)",
+    description:
+      "Die echte PSP-Wache in der Rua Afonso Sanches — Helenas Anlaufstelle vor Ort. Von hier aus wird die Ermittlung koordiniert, während Henrik, noch von seiner Schussverletzung gezeichnet, sich nur zeitverzögert einbringt. Bitte nur von außen ansehen — es ist eine aktive Dienststelle.",
+  },
+  107: {
+    name: "Jachthafen (Marina de Cascais)",
+    bookRef: "Band 8 (Romankarte)",
+    description:
+      "Der Yachthafen als Gegenwelt zum Fischerort: Geld, Boote, Diskretion. Auf der Romankarte der südlichste markierte Punkt — und der passende Ort für das Milieu, in dem ein 'dunkles Geheimnis' besser gedeiht als am belebten Strand.",
+    riddle: {
+      question: "Wie viele Zeichen hat die Kennung am Leuchtfeuer der Marina-Einfahrt?",
+      answers: [],
+      answerType: "number",
+      tolerance: 1,
+      hint: "Molenkopf an der Hafeneinfahrt.",
+      verified: false,
+    },
+  },
+  108: {
+    name: "Farol de Santa Marta (Epilog)",
+    bookRef: "Band 8 (Klappentext-Kulisse)",
+    description:
+      "Nicht auf der Romankarte, aber Teil der 'malerischen Steilküste' aus dem Klappentext — der gekachelte Leuchtturm markiert den Übergang vom Ermittlungs-Cascais zum Postkarten-Cascais. Di–So 10–18 Uhr, Eintritt frei.",
+  },
+  109: {
+    name: "Boca do Inferno (Epilog)",
+    bookRef: "Band 8 (Klappentext-Kulisse)",
+    description:
+      "Der Höllenschlund — die dramatischste Stelle der Steilküste, an der der Atlantik in die ausgehöhlten Felsen kracht. Als Schlusspunkt der Tour die Kulisse, die dem Band seine Grundspannung gibt: ein Urlaubsparadies mit Abgrund.",
   },
 };

@@ -1,4 +1,4 @@
-import type { RouteStop } from "../utils/tour";
+import type { RouteStop } from "../utils/route";
 import { useI18n } from "../i18n";
 import type { EvidencePhotos } from "../hooks/useEvidencePhotos";
 

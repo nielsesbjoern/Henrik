@@ -1,4 +1,4 @@
-import type { RouteStop } from "./tour";
+import type { RouteStop } from "./route";
 
 export function normalizeAnswer(s: string): string {
   return s
@@ -26,7 +26,8 @@ export function isStopUnlocked(
   if (stopIndex <= 0) return true;
 
   const prev = routeStops[stopIndex - 1];
-  if (!prev?.riddle) return true;
+  // Unverified field candidates do not gate the next stop (check-off mode).
+  if (!prev?.riddle || prev.riddle.verified === false) return true;
   return solvedIds.has(prev.id);
 }
 

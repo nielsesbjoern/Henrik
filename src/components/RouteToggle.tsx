@@ -1,4 +1,4 @@
-import type { TourType } from "../utils/tour";
+import type { TourType } from "../utils/route";
 import { useI18n } from "../i18n";
 
 interface RouteToggleProps {

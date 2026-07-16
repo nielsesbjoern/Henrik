@@ -1,23 +1,19 @@
 import type { Translations } from "../types";
+import { legalPt } from "../legal/pt";
 import { stopsPt } from "../stops/pt";
 
 export const pt: Translations = {
   meta: {
-    title: "Nos Passos de Henrik Falkner – Passeio de Crime em Lisboa",
+    title: "Passeio Português – Um Crime de Lisboa de Luis Sellano",
     description:
-      "Passeio literário de crime por Lisboa nos passos da série Henrik Falkner de Luis Sellano.",
+      "Passeio literário por Lisboa nos passos dos romances de crime de Lisboa de Luis Sellano.",
   },
   hero: {
-    meta: "PROCESSO LISBOA / {count} LOCAIS",
-    title: "Processo de Investigação: Henrik Falkner",
-    description:
-      "O tio de Falkner recolheu no antiquário vestígios e padrões criminais. Este passeio segue os seus fichários: da Bica à Alfama, de prova em prova.",
+    author: "LUIS SELLANO",
+    series: "UM CRIME DE LISBOA",
+    title: "Passeio Português",
+    meta: "{count} LOCAIS · {city}",
     cta: "INICIAR PASSEIO",
-    cardLabel: "FICHA N.º 001",
-    caseNo: "PROCESSO N.º",
-    district: "BAIRRO",
-    coordinates: "COORDENADAS",
-    volume: "VOLUME",
   },
   mood: {
     ariaLabel: "Ambiente",
@@ -27,6 +23,7 @@ export const pt: Translations = {
   footer: {
     text: "Projecto de fãs não oficial. As personagens e enredos dos romances pertencem à série de crimes de Lisboa de Luis Sellano (Heyne Verlag). A localização do antiquário é uma verificação de fãs.",
   },
+  legal: legalPt,
   fado: {
     meta: "FADO · SOUNDTRACK",
     title: "Luz da noite em Lisboa",
@@ -40,6 +37,26 @@ export const pt: Translations = {
   legend: {
     title: "Legenda dos marcadores",
     subtitle: "Codificação por cores das paragens no mapa",
+    reconstructedNote:
+      "O Volume 8 não nomeia ruas concretas — estes locais reconstroem o cenário do romance; não são cenas de crime comprovadas.",
+    fictionalNote: "Só no romance — posição conforme o mapa do livro",
+  },
+  cities: {
+    ariaLabel: "Escolher processo",
+    lisboaTab: "PROCESSO LISBOA",
+    cascaisTab: "PROCESSO CASCAIS",
+    lisboaShort: "LISBOA",
+    cascaisShort: "CASCAIS",
+    lisboaAkte: "Processo Lisboa",
+    cascaisAkte: "Processo Cascais",
+    lisboaSubtitle: "Processo Lisboa · Volumes 1–7, 9–11",
+    cascaisSubtitle: "Processo Cascais · Volume 8",
+    progress: "{count}/{total}",
+    sealed: "SELADO",
+    antiquaryNote:
+      "NOTA DO ANTIQUÁRIO: O processo Cascais segue o mapa original do romance do Volume 8. Quatro locais são reais e confirmados — três existem apenas entre duas capas.",
+    expandAkte: "Abrir processo",
+    collapseAkte: "Fechar processo",
   },
   workspace: {
     ariaLabel: "Mais ficheiros",
@@ -53,8 +70,10 @@ export const pt: Translations = {
   infoCards: {
     title: "Notas do processo",
     full: [
-      { label: "Distância total", value: "~6–7 km" },
-      { label: "Tempo a pé", value: "~2 horas" },
+      { label: "Início", value: "Antiquário / Bica" },
+      { label: "Fim", value: "Praça do Comércio" },
+      { label: "Distância total", value: "~5 km" },
+      { label: "Tempo a pé", value: "~1,5–2 horas" },
       { label: "Com pausas", value: "cerca de meio a um dia inteiro" },
       { label: "Melhor dia", value: "Sábado (Feira da Ladra)" },
       {
@@ -64,6 +83,8 @@ export const pt: Translations = {
       },
     ],
     short: [
+      { label: "Início", value: "Antiquário / Bica" },
+      { label: "Fim", value: "Praça do Comércio" },
       { label: "Distância total", value: "~3,5 km" },
       { label: "Tempo a pé", value: "~1 hora" },
       { label: "Com pausas", value: "~2,5 horas" },
@@ -94,10 +115,9 @@ export const pt: Translations = {
     geoDenied: "Acesso à localização negado.",
     geoFailed: "Não foi possível determinar a localização.",
     fullTourGoogleMaps: "Passeio no Google Maps",
-    legAll: "Passeio completo (paragens 1–16)",
-    leg1: "Etapa 1 (paragens 1–8)",
-    leg2: "Etapa 2 (paragens 8–16)",
+    legPart: "Etapa {index} (paragens {from}–{to})",
     scrollZoomHint: "Clique no mapa e use a roda para ampliar",
+    fitRoute: "Centrar o percurso",
   },
   stopList: {
     currentStop: "Local actual",
@@ -128,6 +148,36 @@ export const pt: Translations = {
     shortStops: "6 LOCAIS",
     riddleTitle: "CAÇA AO TESOURO",
     riddleStops: "9 LOCAIS",
+  },
+  tours: {
+    "lisboa-gross": {
+      title: "PASSEIO COMPLETO",
+      stops: "16 LOCAIS",
+      stats: "~6–7 km · a pé ~2 h",
+      heroText:
+        "Nas pegadas de Henrik Falkner: da Bica e do Chiado, passando pelo Rossio até ao Castelo, pela Alfama — e termina no Tejo.",
+    },
+    "lisboa-kurz": {
+      title: "PASSEIO CURTO",
+      stops: "6 LOCAIS",
+      stats: "~3,5 km · a pé ~1 h",
+      heroText:
+        "O essencial em duas horas e meia: antiquário, Chiado, Rossio, Baixa — final com vista sobre a Alfama.",
+    },
+    "lisboa-raetsel": {
+      title: "CAÇA AO TESOURO",
+      stops: "9 LOCAIS",
+      stats: "~4 km · com enigmas",
+      heroText:
+        "Uma caça ao tesouro com enigmas: do Castelo pela Alfama até ao Tejo — e de volta ao antiquário.",
+    },
+    cascais: {
+      title: "PASSEIO DO CRIME",
+      stops: "9 LOCAIS",
+      stats: "~4 km · a pé ~1,25 h · plano",
+      heroText:
+        "O caso do Volume 8: da estação ao local do crime na Praia da Duquesa, pela vila até à marina — epílogo na costa escarpada.",
+    },
   },
   direction: {
     ariaLabel: "Direção do passeio",
@@ -187,6 +237,11 @@ export const pt: Translations = {
   stopDetail: {
     close: "Fechar",
     backToList: "Voltar à lista",
+    cardLabel: "FICHA N.º {number}",
+    caseNo: "PROCESSO N.º",
+    district: "BAIRRO",
+    coordinates: "COORDENADAS",
+    volume: "VOLUME",
     openInMaps: "Abrir no Google Maps",
     directions: "Rota até aqui",
     prev: "Anterior",
@@ -196,17 +251,21 @@ export const pt: Translations = {
     undoDone: "Anular conclusão",
     empty: "Escolha um local no mapa ou na lista",
     showQuote: "Citação do livro",
+    fictionalPlaceNote:
+      "LOCAL FICTÍCIO — posição conforme o mapa do romance, sem morada real",
   },
   categories: {
     buchszene: "Cena real do livro",
     kulisse: "Cenário & ambiente",
     stadttour: "Dica urbana do Henrik",
     fan: "Verificação de fãs",
+    rekonstruiert: "Cenário do livro — reconstruído",
+    fiktiv: "Local fictício — mapa do romance",
   },
   stops: stopsPt,
   food: {
     ariaLabel: "Ementa do Henrik",
-    meta: "PROVAS · CULINÁRIAS (5)",
+    meta: "PROVAS · CULINÁRIAS ({count})",
     title: "Ementa do Henrik",
     markTasted: "Marcar {name} como provado",
     items: {
@@ -235,6 +294,11 @@ export const pt: Translations = {
         name: "Mazagran (café gelado com limão)",
         where: "Miradouro da Graça",
         source: "Refresco de Henrik debaixo dos pinheiros — Volume 2",
+      },
+      mercado: {
+        name: "Petiscos no Mercado da Vila",
+        where: "Mercado da Vila, Cascais",
+        source: "Sem citação do livro — bónus do passeio costeiro",
       },
     },
   },
@@ -390,15 +454,107 @@ export const pt: Translations = {
         recommendation:
           "Ritual de Henrik: à noite, quando a luz baixa e soa a primeira nota. Complementa o Spotify.",
       },
+      "brasserie-entrecote": {
+        name: "La Brasserie de L'Entrecôte",
+        area: "Marina de Cascais",
+        description:
+          "O equivalente luxuoso do Café de São Bento na costa. Em ambiente clássico e elegante, tudo gira em torno do entrecôte perfeitamente tenro, com uma lendária molho secreto de manteiga e ervas.",
+        recommendation:
+          "Dica: Ideal para um jantar elegante com vista para os iates.",
+      },
+      "churrasqueira-viveiro": {
+        name: "Churrasqueira do Viveiro",
+        area: "Colinas de Cascais (Adroana)",
+        description:
+          "Uma dica local rude nas colinas acima da vila. Sem firulas turísticas — um enorme grelhador a carvão, o bulício de famílias locais e as melhores costelas da região.",
+        recommendation:
+          "Dica: Peça a gigante 'Costeleta de Novilho' medium-rare.",
+      },
+      "visconde-da-luz": {
+        name: "Restaurante Visconde da Luz",
+        area: "Jardim Visconde da Luz",
+        description:
+          "Um restaurante maravilhosamente tradicional, quase museológico, junto ao jardim histórico de Cascais. Cadeiras pesadas de madeira sob candelabros — o cenário exacto para os interrogatórios mais difíceis de Henrik.",
+        recommendation:
+          "Dica: O cabrito assado no forno, tenro como manteiga.",
+      },
+      "mar-do-inferno": {
+        name: "Mar do Inferno",
+        area: "Boca do Inferno",
+        description:
+          "Mesmo nas falésias da Boca do Inferno. Apesar da localização proeminente, um favorito dos locais para caranguejo fresco, percebes e peixe selvagem grelhado.",
+        recommendation:
+          "Dica: Partilhar a sapateira recheada.",
+      },
+      "furnas-do-guincho": {
+        name: "Furnas do Guincho",
+        area: "Estrada do Guincho",
+        description:
+          "Construído de forma deslumbrante nas falésias sobre o oceano. Enquanto as ondas rebentam sob as janelas panorâmicas, come-se peixe fino em crosta de sal. Dramático, melancólico, inesquecível.",
+        recommendation:
+          "Dica: O robalo ao sal.",
+      },
+      "taberna-clandestina": {
+        name: "Taberna Clandestina Cascais",
+        area: "Ruelas da vila",
+        description:
+          "Uma joia minúscula e sombria nas ruelas de pedra. Perfeita para um encontro tardio e secreto com excelente tinto português, carpaccio de vaca e queijos escolhidos à mão.",
+        recommendation:
+          "Dica: Um copo tardio de tinto pesado do Alentejo no interior sombreado.",
+      },
+      "museu-castro-guimaraes": {
+        name: "Biblioteca do Museu Condes de Castro Guimarães",
+        area: "Parque Marechal Carmona",
+        description:
+          "Um palacete neogótico junto à água — o tesouro definitivo para qualquer antiquário. A biblioteca histórica guarda mais de 25.000 volumes antigos, fólios raros e uma crónica iluminada inestimável de 1505. Cada centímetro respira a história escura do país.",
+        recommendation:
+          "Dica: Olha para os tectos de madeira entalhada enquanto respiras o cheiro de pergaminho secular.",
+      },
+      "livraria-deja-lu": {
+        name: "Livraria Déjà Lu",
+        area: "Cais da Cidadela",
+        description:
+          "Escondida nas muralhas da Cidadela, esta linda livraria de usados — prateleiras peculiares, poltronas antigas, pilhas de achados literários — parece uma miniatura encantadora do antiquário do Henrik na Riviera.",
+        recommendation:
+          "Dica: Deixa uma pequena oferta e procura relatos de viagem antigos e escondidos.",
+      },
+      "bar-estoril-palacio": {
+        name: "Bar Estoril (Hotel Palácio)",
+        area: "Estoril",
+        description:
+          "O lendário bar de espionagem da Segunda Guerra Mundial. Agentes aliados e do Eixo sentavam-se no fumo denso a poucas mesas de distância enquanto Portugal se mantinha oficialmente neutro. Ian Fleming encontrou aqui a inspiração para James Bond. Poltronas de couro, luz baixa, melancolia histórica pura.",
+        recommendation:
+          "Dica: Um martini clássico ou um dry white port antigo — e estudar as fotografias de agentes nas paredes.",
+      },
+      "farol-santa-marta-guide": {
+        name: "Farol de Santa Marta",
+        area: "Costa de Cascais",
+        description:
+          "O icónico farol azul e branco junto a um solar histórico. Um lugar de saudade marítima, onde o sinal nocturno guia marinheiros solitários — para Henrik o refúgio visual perfeito quando a investigação emperra.",
+        recommendation:
+          "Dica: Vem à hora azul, senta-te nas falésias junto à torre e ouve o bater surdo das ondas.",
+      },
+      "cabo-da-roca": {
+        name: "Cabo da Roca (o ponto mais ocidental)",
+        area: "Estrada costeira Sintra–Cascais",
+        description:
+          "O ponto mais ocidental da Europa continental. Um farol solitário e açoitado pelo vento numa falésia de 140 metros sobre o Atlântico. Aqui acaba a Europa — um lugar profundamente melancólico e cru, espelho da fractura interior de Henrik Falkner.",
+        recommendation:
+          "Dica: Leva um casaco. O vento corta afiado e varre do cabeça qualquer pensamento inútil.",
+      },
     },
   },
   laufzettel: {
     ariaLabel: "Folha de registo",
     meta: "FOLHA DE REGISTO · PROCESSO LISBOA",
+    metaCascais: "FOLHA DE REGISTO · PROCESSO CASCAIS",
     title: "Protocolo de investigação",
-    caseClosed: "SELADO A LACRE",
+    caseClosed: "CASO ENCERRADO",
     allSighted: "{total} DE {total} LOCAIS REGISTADOS",
     sighted: "REGISTADOS: {count} / {total}",
+    totalSighted: "TOTAL: {count} / {total} LOCAIS",
+    allCasesClosed: "TODOS OS PROCESSOS ENCERRADOS",
+    allCasesSubtitle: "Lisboa & Cascais · {total} locais",
     quote: "O caso está resolvido. Hora de um Vinho Verde.",
     fullyTasted: "TOTALMENTE PROVADO",
     resetProgress: "Recomeçar",

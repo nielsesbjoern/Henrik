@@ -1,8 +1,19 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
+import {
+  DEFAULT_CITY_ID,
+  DEFAULT_TOUR_ID,
+  getCity,
+  getDefaultTourId,
+  getTour,
+  isValidCityId,
+  isValidTourId,
+} from "../data/cities";
 import { foodItemBases } from "../data/food";
-import { stopBases } from "../data/stops";
+import { getStopIdsForCity, stopBases } from "../data/stops";
+import type { CityId } from "../data/types";
 import { formatStampDate } from "../utils/stamp";
 import { checkAnswer } from "../utils/riddle";
+import { isLegalPageId } from "../data/legal";
 
 export interface VisitedEntry {
   date?: string;
@@ -18,6 +29,8 @@ const STORAGE_KEY = "luis-sellano-progress";
 export const NOTES_MAX_LENGTH = 900;
 
 interface StoredProgress {
+  cityId?: CityId;
+  tourId?: string;
   solved: VisitedRecord;
   visited: VisitedRecord;
   foodChecked: string[];
@@ -26,6 +39,8 @@ interface StoredProgress {
 }
 
 interface ParsedTourHash {
+  cityId: CityId;
+  tourId: string;
   solved: VisitedRecord;
   visited: VisitedRecord;
   foodChecked: Set<string>;
@@ -52,14 +67,30 @@ function clampNotes(value: string): string {
   return value.slice(0, NOTES_MAX_LENGTH);
 }
 
-function parseTourHash(hash = window.location.hash): ParsedTourHash {
+function resolveTourId(cityId: CityId, tourId: string | undefined): string {
+  if (tourId && isValidTourId(tourId)) {
+    const found = getTour(tourId);
+    if (found && found.city.id === cityId) return tourId;
+  }
+  return getDefaultTourId(cityId);
+}
+
+function parseTourHash(hash = window.location.hash): ParsedTourHash | null {
+  const content = hash.replace(/^#/, "").trim();
+  if (!content) return null;
+
+  // Legal pages use bare hashes like #impressum — leave them alone.
+  if (isLegalPageId(content.split("&")[0]?.split("=")[0] ?? content)) {
+    return null;
+  }
+
   const solved: VisitedRecord = {};
   const visited: VisitedRecord = {};
   const foodChecked = new Set<string>();
   let freeTour = false;
   let notes = "";
-  const content = hash.replace(/^#/, "").trim();
-  if (!content) return { solved, visited, foodChecked, freeTour, notes };
+  let cityId: CityId = DEFAULT_CITY_ID;
+  let tourId: string | undefined;
 
   for (const part of content.split("&")) {
     const pair = splitHashPair(part);
@@ -67,7 +98,10 @@ function parseTourHash(hash = window.location.hash): ParsedTourHash {
     const [key, value] = pair;
     if (!value) continue;
 
-    if (key === "s") parseStopIds(value, solved);
+    if (key === "c" && isValidCityId(value)) cityId = value;
+    if (key === "t") tourId = value;
+    // `s` is legacy; `r` is the documented key for solved riddles.
+    if (key === "s" || key === "r") parseStopIds(value, solved);
     if (key === "v") parseStopIds(value, visited);
     if (key === "f") {
       for (const foodId of value.split(",")) {
@@ -84,15 +118,22 @@ function parseTourHash(hash = window.location.hash): ParsedTourHash {
     }
   }
 
-  return { solved, visited, foodChecked, freeTour, notes };
+  return {
+    cityId,
+    tourId: resolveTourId(cityId, tourId),
+    solved,
+    visited,
+    foodChecked,
+    freeTour,
+    notes,
+  };
 }
 
 function loadStoredProgress(): StoredProgress | null {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return null;
-    const data = JSON.parse(raw) as StoredProgress;
-    return data;
+    return JSON.parse(raw) as StoredProgress;
   } catch {
     return null;
   }
@@ -102,12 +143,29 @@ function getInitialState(): ParsedTourHash {
   const fromHash = parseTourHash();
   const hasHash = window.location.hash.length > 1;
 
-  if (hasHash) return fromHash;
+  if (fromHash && hasHash) return fromHash;
 
   const stored = loadStoredProgress();
-  if (!stored) return fromHash;
+  if (!stored) {
+    return {
+      cityId: DEFAULT_CITY_ID,
+      tourId: DEFAULT_TOUR_ID,
+      solved: {},
+      visited: {},
+      foodChecked: new Set(),
+      freeTour: false,
+      notes: "",
+    };
+  }
+
+  const cityId =
+    stored.cityId && isValidCityId(stored.cityId)
+      ? stored.cityId
+      : DEFAULT_CITY_ID;
 
   return {
+    cityId,
+    tourId: resolveTourId(cityId, stored.tourId),
     solved: stored.solved ?? {},
     visited: stored.visited ?? {},
     foodChecked: new Set(stored.foodChecked ?? []),
@@ -117,19 +175,21 @@ function getInitialState(): ParsedTourHash {
 }
 
 function buildTourHash(
+  cityId: CityId,
+  tourId: string,
   solved: VisitedRecord,
   visited: VisitedRecord,
   foodChecked: Set<string>,
   freeTour: boolean,
   notes: string,
 ): string {
-  const parts: string[] = [];
+  const parts: string[] = [`c=${cityId}`, `t=${tourId}`];
 
   const solvedIds = Object.keys(solved)
     .map(Number)
     .filter((id) => VALID_STOP_IDS.has(id))
     .sort((a, b) => a - b);
-  if (solvedIds.length > 0) parts.push(`s=${solvedIds.join(",")}`);
+  if (solvedIds.length > 0) parts.push(`r=${solvedIds.join(",")}`);
 
   const visitedIds = Object.keys(visited)
     .map(Number)
@@ -147,11 +207,13 @@ function buildTourHash(
   const trimmedNotes = notes.trim();
   if (trimmedNotes) parts.push(`n=${encodeURIComponent(trimmedNotes)}`);
 
-  return parts.length > 0 ? `#${parts.join("&")}` : "";
+  return `#${parts.join("&")}`;
 }
 
 export function useTourState() {
   const initial = getInitialState();
+  const [cityId, setCityIdState] = useState<CityId>(initial.cityId);
+  const [tourId, setTourIdState] = useState(initial.tourId);
   const [solved, setSolved] = useState<VisitedRecord>(initial.solved);
   const [visited, setVisited] = useState<VisitedRecord>(initial.visited);
   const [foodChecked, setFoodChecked] = useState<Set<string>>(initial.foodChecked);
@@ -159,6 +221,12 @@ export function useTourState() {
   const [notes, setNotesState] = useState(initial.notes);
   const [animatingId, setAnimatingId] = useState<number | null>(null);
   const [completionAnimating, setCompletionAnimating] = useState(false);
+
+  const city = useMemo(() => getCity(cityId), [cityId]);
+  const activeTour = useMemo(
+    () => getTour(tourId)?.tour ?? city.tours[0],
+    [tourId, city],
+  );
 
   const solvedIds = useMemo(
     () => new Set(Object.keys(solved).map(Number)),
@@ -179,8 +247,33 @@ export function useTourState() {
 
   const allFoodComplete = foodChecked.size === foodItemBases.length;
 
+  const totalStopCount = stopBases.length;
+
+  const globalSightedCount = useMemo(() => {
+    let count = 0;
+    for (const stop of stopBases) {
+      if (stampedIds.has(stop.id)) count += 1;
+    }
+    return count;
+  }, [stampedIds]);
+
+  const cityComplete = useCallback(
+    (id: CityId) => {
+      const ids = getStopIdsForCity(id);
+      return ids.length > 0 && ids.every((stopId) => stampedIds.has(stopId));
+    },
+    [stampedIds],
+  );
+
+  const allCitiesComplete = useMemo(
+    () => cityComplete("lisboa") && cityComplete("cascais"),
+    [cityComplete],
+  );
+
   const persist = useCallback(
     (
+      nextCityId: CityId,
+      nextTourId: string,
       nextSolved: VisitedRecord,
       nextVisited: VisitedRecord,
       nextFood: Set<string>,
@@ -188,6 +281,8 @@ export function useTourState() {
       nextNotes: string,
     ) => {
       const payload: StoredProgress = {
+        cityId: nextCityId,
+        tourId: nextTourId,
         solved: nextSolved,
         visited: nextVisited,
         foodChecked: [...nextFood].sort(),
@@ -201,13 +296,21 @@ export function useTourState() {
 
   const syncHashAndStorage = useCallback(
     (
+      nextCityId: CityId,
+      nextTourId: string,
       nextSolved: VisitedRecord,
       nextVisited: VisitedRecord,
       nextFood: Set<string>,
       nextFreeTour: boolean,
       nextNotes: string,
     ) => {
+      // Don't overwrite legal-page hashes.
+      const bare = window.location.hash.replace(/^#\/?/, "").split("&")[0] ?? "";
+      if (isLegalPageId(bare)) return;
+
       const nextHash = buildTourHash(
+        nextCityId,
+        nextTourId,
         nextSolved,
         nextVisited,
         nextFood,
@@ -218,18 +321,46 @@ export function useTourState() {
       if (window.location.hash !== nextHash) {
         window.history.replaceState(null, "", `${path}${nextHash}`);
       }
-      persist(nextSolved, nextVisited, nextFood, nextFreeTour, nextNotes);
+      persist(
+        nextCityId,
+        nextTourId,
+        nextSolved,
+        nextVisited,
+        nextFood,
+        nextFreeTour,
+        nextNotes,
+      );
     },
     [persist],
   );
 
   useEffect(() => {
-    syncHashAndStorage(solved, visited, foodChecked, freeTour, notes);
-  }, [solved, visited, foodChecked, freeTour, notes, syncHashAndStorage]);
+    syncHashAndStorage(
+      cityId,
+      tourId,
+      solved,
+      visited,
+      foodChecked,
+      freeTour,
+      notes,
+    );
+  }, [
+    cityId,
+    tourId,
+    solved,
+    visited,
+    foodChecked,
+    freeTour,
+    notes,
+    syncHashAndStorage,
+  ]);
 
   useEffect(() => {
     const onHashChange = () => {
       const parsed = parseTourHash();
+      if (!parsed) return;
+      setCityIdState(parsed.cityId);
+      setTourIdState(parsed.tourId);
       setSolved(parsed.solved);
       setVisited(parsed.visited);
       setFoodChecked(parsed.foodChecked);
@@ -243,6 +374,22 @@ export function useTourState() {
   const setNotes = useCallback((value: string) => {
     setNotesState(clampNotes(value));
   }, []);
+
+  const setCityId = useCallback((next: CityId) => {
+    setCityIdState(next);
+    setTourIdState(getDefaultTourId(next));
+  }, []);
+
+  const setTourId = useCallback(
+    (next: string) => {
+      if (!isValidTourId(next)) return;
+      const found = getTour(next);
+      if (!found) return;
+      setCityIdState(found.city.id);
+      setTourIdState(next);
+    },
+    [],
+  );
 
   const toggleVisited = useCallback((stopId: number) => {
     if (!VALID_STOP_IDS.has(stopId)) return;
@@ -318,8 +465,17 @@ export function useTourState() {
     setCompletionAnimating(false);
     localStorage.removeItem(STORAGE_KEY);
     const path = `${window.location.pathname}${window.location.search}`;
-    window.history.replaceState(null, "", path);
-  }, []);
+    const nextHash = buildTourHash(
+      cityId,
+      tourId,
+      {},
+      {},
+      new Set(),
+      false,
+      "",
+    );
+    window.history.replaceState(null, "", `${path}${nextHash}`);
+  }, [cityId, tourId]);
 
   useEffect(() => {
     if (animatingId === null) return;
@@ -329,11 +485,17 @@ export function useTourState() {
 
   useEffect(() => {
     if (!completionAnimating) return;
-    const timer = window.setTimeout(() => setCompletionAnimating(false), 220);
+    const timer = window.setTimeout(() => setCompletionAnimating(false), 700);
     return () => window.clearTimeout(timer);
   }, [completionAnimating]);
 
   return {
+    cityId,
+    setCityId,
+    tourId,
+    setTourId,
+    city,
+    activeTour,
     solved,
     solvedIds,
     visited,
@@ -341,6 +503,10 @@ export function useTourState() {
     stampedIds,
     foodChecked,
     allFoodComplete,
+    globalSightedCount,
+    totalStopCount,
+    cityComplete,
+    allCitiesComplete,
     freeTour,
     notes,
     setNotes,

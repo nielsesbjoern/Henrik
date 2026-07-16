@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import type { RouteStop } from "../utils/tour";
+import type { RouteStop } from "../utils/route";
 import type { GeoPosition } from "../hooks/useGeolocation";
 import {
   bearingDeg,
@@ -75,7 +75,7 @@ export function NextStopNavigator({
         )}
 
         <div className="min-w-0 flex-1">
-          <p className="truncate text-sm font-medium text-ink">{nextStop.name}</p>
+          <p className="book-place-name truncate text-base text-ink">{nextStop.name}</p>
           {metrics ? (
             <p className="meta-mono mt-0.5 text-xs text-[color:var(--color-pencil)]">
               {format(t.navigator.toStop, {

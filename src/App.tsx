@@ -13,7 +13,7 @@ function App() {
       <div className="paper-stain paper-stain--2" aria-hidden />
       <div className="paper-stain paper-stain--3" aria-hidden />
       <div className="app-shell__content">
-        <Hero />
+        <Hero cityId={tourState.cityId} activeTour={tourState.activeTour} />
         <MapSection tourState={tourState} />
         <Footer />
       </div>

@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import type { RouteStop, TourType } from "../utils/tour";
+import type { RouteStop, TourType } from "../utils/route";
 import type { VisitedRecord } from "../hooks/useTourState";
 import type { EvidencePhotos } from "../hooks/useEvidencePhotos";
+import type { CityId } from "../data/types";
 import { StopStamp } from "./StopStamp";
 import { EvidenceArchive } from "./EvidenceArchive";
 import { WaxSeal } from "./WaxSeal";
@@ -10,27 +11,43 @@ import { useI18n } from "../i18n";
 interface LaufzettelProps {
   tourType: TourType;
   routeStops: RouteStop[];
+  cityId: CityId;
   solved: VisitedRecord;
   visited: VisitedRecord;
   photos: EvidencePhotos;
   animatingId: number | null;
   completionAnimating: boolean;
   allFoodComplete: boolean;
+  globalSightedCount: number;
+  totalStopCount: number;
+  allCitiesComplete: boolean;
   onCompletionShown: () => void;
   onShare?: () => Promise<boolean>;
   onReset?: () => void;
   onNavigateToStop?: (stopId: number) => void;
 }
 
+function gridClass(tourType: TourType): string {
+  if (tourType === "full") return "laufzettel-grid--full";
+  if (tourType === "short") return "laufzettel-grid--short";
+  if (tourType === "riddle") return "laufzettel-grid--riddle";
+  if (tourType === "cascais") return "laufzettel-grid--cascais";
+  return "";
+}
+
 export function Laufzettel({
   tourType,
   routeStops,
+  cityId,
   solved,
   visited,
   photos,
   animatingId,
   completionAnimating,
   allFoodComplete,
+  globalSightedCount,
+  totalStopCount,
+  allCitiesComplete,
   onCompletionShown,
   onShare,
   onReset,
@@ -49,13 +66,13 @@ export function Laufzettel({
 
   useEffect(() => {
     if (isComplete && !wasCompleteRef.current) {
-      onCompletionShown();
+      const timer = window.setTimeout(() => onCompletionShown(), 120);
+      wasCompleteRef.current = true;
+      return () => window.clearTimeout(timer);
     }
     if (!isComplete) {
       wasCompleteRef.current = false;
-      return;
     }
-    wasCompleteRef.current = true;
   }, [isComplete, onCompletionShown]);
 
   const handleShare = async () => {
@@ -71,6 +88,9 @@ export function Laufzettel({
     onReset();
   };
 
+  const metaLabel =
+    cityId === "cascais" ? t.laufzettel.metaCascais : t.laufzettel.meta;
+
   return (
     <div className="laufzettel" aria-label={t.laufzettel.ariaLabel}>
       <div
@@ -80,8 +100,8 @@ export function Laufzettel({
       >
         <header className="mb-6 flex items-start justify-between gap-3">
           <div>
-            <p className="meta-mono text-[11px] tracking-[0.12em] text-[color:var(--color-pencil)]">
-              {t.laufzettel.meta}
+            <p className="brand-label text-[11px] tracking-[0.12em] text-[color:var(--color-pencil)]">
+              {metaLabel}
             </p>
             <h2 className="mt-1 text-2xl text-ink sm:text-3xl">
               {t.laufzettel.title}
@@ -103,17 +123,7 @@ export function Laufzettel({
         </header>
 
         <div className="relative">
-          <ol
-            className={`laufzettel-grid ${
-              tourType === "full"
-                ? "laufzettel-grid--full"
-                : tourType === "short"
-                  ? "laufzettel-grid--short"
-                  : tourType === "riddle"
-                    ? "laufzettel-grid--riddle"
-                    : ""
-            }`}
-          >
+          <ol className={`laufzettel-grid ${gridClass(tourType)}`}>
             {routeStops.map((stop) => {
               const entry = getEntry(stop.id);
 
@@ -138,8 +148,8 @@ export function Laufzettel({
                       </div>
                     )}
                   </div>
-                  <span className="laufzettel-slot__number meta-mono">
-                    {String(stop.tourNumber).padStart(2, "0")}
+                  <span className="laufzettel-slot__number meta-data">
+                    HF-{String(stop.tourNumber).padStart(3, "0")}
                   </span>
                 </li>
               );
@@ -155,12 +165,30 @@ export function Laufzettel({
               />
             </div>
           )}
+
+          {allCitiesComplete && (
+            <div className="laufzettel-completion laufzettel-completion--all">
+              <WaxSeal
+                animate={completionAnimating}
+                label={t.laufzettel.allCasesClosed}
+                subtitle={format(t.laufzettel.allCasesSubtitle, {
+                  total: totalStopCount,
+                })}
+              />
+            </div>
+          )}
         </div>
 
         <p className="meta-mono mt-6 text-xs text-[color:var(--color-pencil)]">
           {format(t.laufzettel.sighted, {
             count: String(sightedCount).padStart(2, "0"),
             total: String(totalActive).padStart(2, "0"),
+          })}
+        </p>
+        <p className="meta-mono mt-1 text-xs text-[color:var(--color-ink)]">
+          {format(t.laufzettel.totalSighted, {
+            count: String(globalSightedCount).padStart(2, "0"),
+            total: String(totalStopCount).padStart(2, "0"),
           })}
         </p>
 

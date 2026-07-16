@@ -1,4 +1,4 @@
-import type { TourType } from "../utils/tour";
+import type { TourType } from "../utils/route";
 import { useI18n } from "../i18n";
 
 interface InfoCardsProps {
@@ -12,7 +12,7 @@ export function InfoCards({ tourType }: InfoCardsProps) {
       ? t.infoCards.full
       : tourType === "riddle"
         ? t.infoCards.riddle
-        : t.infoCards.short;
+        : t.infoCards.short; // short + cascais
 
   return (
     <section className="px-4 py-8 sm:px-8">

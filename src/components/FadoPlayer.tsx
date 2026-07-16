@@ -17,12 +17,14 @@ export function FadoPlayer() {
           aria-controls="fado-embed"
         >
           <span className="min-w-0 text-left">
-            <span className="meta-mono hidden text-[10px] tracking-[0.12em] text-[color:var(--color-pencil)] sm:block">
+            <span className="font-mono hidden text-[10px] tracking-normal text-[color:var(--color-pencil)] sm:block">
               {t.fado.meta}
             </span>
-            <span className="block truncate text-sm text-ink">{t.fado.title}</span>
+            <span className="font-display mt-0.5 block truncate text-base text-[color:var(--color-ink)] sm:text-lg">
+              {t.fado.title}
+            </span>
           </span>
-          <span className="meta-mono shrink-0 text-[11px] text-[color:var(--color-stamp)]">
+          <span className="font-mono shrink-0 text-[11px] tracking-normal text-[color:var(--color-azulejo)]">
             {open ? t.fado.collapse : t.fado.expand}
           </span>
         </button>

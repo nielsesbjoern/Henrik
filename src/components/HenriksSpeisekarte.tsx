@@ -1,9 +1,12 @@
+import { getCityIdForStop } from "../data/stops";
+import type { CityId } from "../data/types";
 import { useI18n } from "../i18n";
 
 interface HenriksSpeisekarteProps {
   foodChecked: Set<string>;
   onToggleFood: (foodId: string) => void;
   onNavigateToStop: (stopId: number) => void;
+  cityId: CityId;
 }
 
 function FoodCheckbox({
@@ -48,18 +51,31 @@ function FoodCheckbox({
   );
 }
 
+function foodItemCityId(item: {
+  stopId?: number;
+  cityId?: CityId;
+}): CityId | undefined {
+  if (item.stopId != null) return getCityIdForStop(item.stopId);
+  return item.cityId;
+}
+
 export function HenriksSpeisekarte({
   foodChecked,
   onToggleFood,
   onNavigateToStop,
+  cityId,
 }: HenriksSpeisekarteProps) {
   const { t, format, foodItems } = useI18n();
+
+  const visibleItems = foodItems.filter(
+    (item) => foodItemCityId(item) === cityId,
+  );
 
   return (
     <section className="speisekarte" aria-label={t.food.ariaLabel}>
       <header className="mb-5">
         <p className="meta-mono text-[11px] tracking-[0.12em] text-[color:var(--color-pencil)]">
-          {t.food.meta}
+          {format(t.food.meta, { count: visibleItems.length })}
         </p>
         <h2 className="mt-1 text-xl text-ink sm:text-2xl">
           {t.food.title}
@@ -67,8 +83,9 @@ export function HenriksSpeisekarte({
       </header>
 
       <ul className="speisekarte-list space-y-4">
-        {foodItems.map((item) => {
+        {visibleItems.map((item) => {
           const checked = foodChecked.has(item.id);
+          const linkedStopId = item.stopId;
 
           return (
             <li key={item.id} className="speisekarte-item flex gap-3">
@@ -81,13 +98,19 @@ export function HenriksSpeisekarte({
                 <p className="text-base leading-snug text-ink sm:text-lg">
                   {item.name}
                 </p>
-                <button
-                  type="button"
-                  onClick={() => onNavigateToStop(item.stopId)}
-                  className="meta-mono mt-0.5 block text-left text-[11px] text-[color:var(--color-pencil)] underline decoration-[color:var(--color-pencil)] decoration-dotted underline-offset-2 transition hover:text-[color:var(--color-azulejo)] hover:decoration-[color:var(--color-azulejo)]"
-                >
-                  {item.where}
-                </button>
+                {linkedStopId != null ? (
+                  <button
+                    type="button"
+                    onClick={() => onNavigateToStop(linkedStopId)}
+                    className="meta-mono mt-0.5 block text-left text-[11px] text-[color:var(--color-pencil)] underline decoration-[color:var(--color-pencil)] decoration-dotted underline-offset-2 transition hover:text-[color:var(--color-azulejo)] hover:decoration-[color:var(--color-azulejo)]"
+                  >
+                    {item.where}
+                  </button>
+                ) : (
+                  <p className="meta-mono mt-0.5 text-[11px] text-[color:var(--color-pencil)]">
+                    {item.where}
+                  </p>
+                )}
                 <p className="meta-mono mt-1 text-[10px] leading-relaxed text-[color:var(--color-pencil)]">
                   {item.source}
                 </p>

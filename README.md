@@ -1,6 +1,6 @@
-# Henrik Falkner – Lissabon Krimi-Stadttour
+# Portugiesische Stadttour
 
-Literarische Stadttour durch Lissabon auf den Spuren der *Lissabon-Krimis* von Luis Sellano (Henrik-Falkner-Reihe). Mobile-first Single-Page-App mit interaktiver Karte, Tour-Modus und zwei Routenvarianten.
+Literarische Stadttour durch Lissabon auf den Spuren der *Lissabon-Krimis* von Luis Sellano. Mobile-first Single-Page-App mit interaktiver Karte, Tour-Modus und mehreren Routenvarianten.
 
 ## Tech-Stack
 
@@ -27,10 +27,11 @@ npm run preview
 
 ## Features
 
-- **Große Tour** (15 Stopps) und **Kurztour** (6 Stopps) mit gemeinsamem Datensatz
-- Leaflet-Karte mit nummerierten Markern, Kategorie-Farben und gestrichelter Route
-- Google-Maps-Deeplinks (einzelne Stopps, Gesamtroute in zwei Etappen)
-- Geolocation („Mich orten“)
-- Tour-Modus mit Fortschritt, Navigation und Abhaken besuchter Stopps (nur React-State)
+- **Große Tour**, **Kurztour** und **Schnitzeljagd** mit gemeinsamem Datensatz
+- Tourrichtung umkehrbar (Start ↔ Ende)
+- Leaflet-Karte mit nummerierten Markern und Route
+- Google-Maps-Deeplinks
+- Geolocation und Tour-Modus mit Fortschritt
+- Sammelpass mit Wachssiegel bei Vollendung
 
 Alle Tourdaten liegen in `src/data/stops.ts`.

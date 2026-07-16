@@ -1,12 +1,21 @@
-import { getCategoryConfig } from "../utils/categories";
-import type { Category } from "../data/stops";
+import { stopBases } from "../data/stops";
+import type { CityId } from "../data/types";
+import {
+  categoriesPresentIn,
+  getCategoryConfig,
+} from "../utils/categories";
 import { useI18n } from "../i18n";
 
-const categories: Category[] = ["buchszene", "kulisse", "stadttour", "fan"];
+interface LegendProps {
+  cityId?: CityId;
+}
 
-export function Legend() {
+export function Legend({ cityId = "lisboa" }: LegendProps) {
   const { t } = useI18n();
   const categoryConfig = getCategoryConfig(t.categories);
+  const categories = categoriesPresentIn(
+    stopBases.filter((s) => s.cityId === cityId),
+  );
 
   return (
     <section className="px-4 py-8 sm:px-8">
@@ -19,15 +28,36 @@ export function Legend() {
           {categories.map((cat) => (
             <li
               key={cat}
-              className="file-card flex items-center gap-3 px-4 py-3"
+              className="file-card flex items-start gap-3 px-4 py-3"
             >
               <span
-                className="h-4 w-4 shrink-0 rounded-full border-2 border-[color:var(--color-paper)]"
-                style={{ backgroundColor: categoryConfig[cat].color }}
+                className={`mt-0.5 h-4 w-4 shrink-0 rounded-full border-2 border-[color:var(--color-paper)] ${
+                  categoryConfig[cat].dashed
+                    ? "border-dashed bg-transparent"
+                    : ""
+                }`}
+                style={
+                  categoryConfig[cat].dashed
+                    ? {
+                        borderColor: categoryConfig[cat].color,
+                        backgroundColor: "transparent",
+                      }
+                    : { backgroundColor: categoryConfig[cat].color }
+                }
                 aria-hidden
               />
               <span className="text-sm text-ink">
                 {categoryConfig[cat].label}
+                {cat === "rekonstruiert" && (
+                  <span className="meta-mono mt-1 block text-[10px] leading-snug text-[color:var(--color-pencil)]">
+                    {t.legend.reconstructedNote}
+                  </span>
+                )}
+                {cat === "fiktiv" && (
+                  <span className="meta-mono mt-1 block text-[10px] leading-snug text-[color:var(--color-pencil)]">
+                    {t.legend.fictionalNote}
+                  </span>
+                )}
               </span>
             </li>
           ))}

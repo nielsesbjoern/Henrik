@@ -21,7 +21,9 @@ export function getStampImperfections(stopId: number): StampImperfections {
 }
 
 export function getStampColor(category: Category): string {
-  return category === "buchszene" ? "var(--stamp)" : "var(--azulejo)";
+  if (category === "buchszene" || category === "fiktiv") return "var(--stamp)";
+  if (category === "rekonstruiert") return "var(--pencil)";
+  return "var(--azulejo)";
 }
 
 export function shortenPlaceName(name: string, maxLen = 22): string {

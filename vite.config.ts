@@ -11,12 +11,12 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'icons.svg', 'icons/*.png', 'icons/*.svg'],
       manifest: {
-        name: 'Auf den Spuren von Henrik Falkner',
-        short_name: 'Falkner Tour',
+        name: 'Portugiesische Stadttour',
+        short_name: 'Stadttour',
         description:
-          'Literarische Krimi-Stadttour durch Lissabon auf den Spuren der Henrik-Falkner-Reihe von Luis Sellano.',
-        theme_color: '#14549e',
-        background_color: '#fbfaf7',
+          'Literarische Stadttour durch Lissabon auf den Spuren der Lissabon-Krimis von Luis Sellano.',
+        theme_color: '#0a4d5a',
+        background_color: '#f4f1ea',
         display: 'standalone',
         orientation: 'portrait-primary',
         start_url: '/',

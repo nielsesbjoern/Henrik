@@ -1,25 +1,39 @@
-import { getCategoryConfig } from "../utils/categories";
-import type { Category } from "../data/stops";
+import { stopBases } from "../data/stops";
+import type { CityId } from "../data/types";
+import {
+  categoriesPresentIn,
+  getCategoryConfig,
+} from "../utils/categories";
 import { useI18n } from "../i18n";
 
-const categories: Category[] = ["buchszene", "kulisse", "stadttour", "fan"];
+interface MapLegendChipsProps {
+  cityId: CityId;
+}
 
-export function MapLegendChips() {
+export function MapLegendChips({ cityId }: MapLegendChipsProps) {
   const { t } = useI18n();
   const categoryConfig = getCategoryConfig(t.categories);
+  const categories = categoriesPresentIn(
+    stopBases.filter((s) => s.cityId === cityId),
+  );
 
   return (
-    <details className="map-legend-overlay group absolute bottom-16 left-3 z-[1000] max-w-[min(calc(100%-1.5rem),16rem)] sm:bottom-4">
+    <details className="map-legend-overlay group absolute bottom-16 left-3 z-[1000] max-w-[min(calc(100%-1.5rem),18rem)] sm:bottom-4">
       <summary className="map-pill-button meta-mono flex cursor-pointer list-none items-center gap-2 px-3 py-2 text-[10px] text-ink">
-        <span
-          className="flex gap-0.5"
-          aria-hidden
-        >
+        <span className="flex gap-0.5" aria-hidden>
           {categories.map((cat) => (
             <span
               key={cat}
-              className="h-2 w-2 rounded-full"
-              style={{ backgroundColor: categoryConfig[cat].color }}
+              className={`h-2 w-2 rounded-full ${
+                categoryConfig[cat].dashed
+                  ? "border border-dashed bg-transparent"
+                  : ""
+              }`}
+              style={
+                categoryConfig[cat].dashed
+                  ? { borderColor: categoryConfig[cat].color }
+                  : { backgroundColor: categoryConfig[cat].color }
+              }
             />
           ))}
         </span>
@@ -32,14 +46,34 @@ export function MapLegendChips() {
         {categories.map((cat) => (
           <li
             key={cat}
-            className="meta-mono flex items-center gap-2 text-[10px] text-ink"
+            className="meta-mono flex items-start gap-2 text-[10px] text-ink"
           >
             <span
-              className="h-2.5 w-2.5 shrink-0 rounded-full"
-              style={{ backgroundColor: categoryConfig[cat].color }}
+              className={`mt-0.5 h-2.5 w-2.5 shrink-0 rounded-full ${
+                categoryConfig[cat].dashed
+                  ? "border border-dashed bg-transparent"
+                  : ""
+              }`}
+              style={
+                categoryConfig[cat].dashed
+                  ? { borderColor: categoryConfig[cat].color }
+                  : { backgroundColor: categoryConfig[cat].color }
+              }
               aria-hidden
             />
-            {categoryConfig[cat].label}
+            <span>
+              {categoryConfig[cat].label}
+              {cat === "rekonstruiert" && (
+                <span className="mt-0.5 block text-[9px] leading-snug text-[color:var(--color-pencil)]">
+                  {t.legend.reconstructedNote}
+                </span>
+              )}
+              {cat === "fiktiv" && (
+                <span className="mt-0.5 block text-[9px] leading-snug text-[color:var(--color-pencil)]">
+                  {t.legend.fictionalNote}
+                </span>
+              )}
+            </span>
           </li>
         ))}
       </ul>

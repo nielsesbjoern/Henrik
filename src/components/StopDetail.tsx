@@ -1,5 +1,5 @@
 import { getCategoryConfig } from "../utils/categories";
-import type { RouteStop, TourType } from "../utils/tour";
+import type { RouteStop, TourType } from "../utils/route";
 import {
   googleMapsDirectionsUrl,
   googleMapsSearchUrl,
@@ -31,6 +31,11 @@ interface StopDetailProps {
   onClose: () => void;
 }
 
+function formatCoords(lat: number, lng: number, approximate: boolean): string {
+  const value = `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+  return approximate ? `≈ ${value}` : value;
+}
+
 export function StopDetail({
   stop,
   tourType,
@@ -54,6 +59,13 @@ export function StopDetail({
   const categoryConfig = getCategoryConfig(t.categories);
   const isRiddleTour = tourType === "riddle";
   const isStamped = stampedIds.has(stop.id);
+  const isFictional = stop.category === "fiktiv";
+  const caseNumber = String(stop.tourNumber).padStart(3, "0");
+  const mapsUrl = googleMapsSearchUrl(stop.lat, stop.lng);
+  const showVerifiedRiddle =
+    Boolean(stop.riddle) &&
+    isRiddleTour &&
+    stop.riddle?.verified !== false;
 
   const handleDone = () => {
     if (!onToggleVisited) return;
@@ -92,53 +104,92 @@ export function StopDetail({
           </p>
         ) : (
           <>
-            <div className="flex items-start gap-3">
-              <span
-                className={`stop-marker stop-marker--list${
-                  isStamped ? " stop-marker--visited stop-marker--stamped" : ""
-                }`}
-                style={{
-                  position: "relative",
-                  left: "auto",
-                  top: "auto",
-                  backgroundColor: isStamped
-                    ? "var(--color-paper)"
-                    : categoryConfig[stop.category].color,
-                }}
-                aria-hidden
-              >
-                <span className="stop-marker__label">
-                  {isStamped ? (
-                    <StopStamp
-                      stopId={stop.id}
-                      stopNumber={stop.tourNumber}
-                      placeName={stop.name}
-                      category={stop.category}
-                      size="mini"
-                    />
-                  ) : (
-                    String(stop.tourNumber).padStart(2, "0")
-                  )}
-                </span>
-              </span>
-              <div className="min-w-0 flex-1">
-                <CategoryBadge category={stop.category} />
-                <h3 className="mt-1.5 font-display text-xl font-semibold leading-snug text-ink">
-                  {stop.name}
-                </h3>
-                <p className="meta-mono mt-1 text-xs text-[color:var(--color-pencil)]">
-                  {stop.district} · {stop.bookRef}
+            <article
+              className={`file-card relative p-4 sm:p-5 ${
+                isStamped
+                  ? "border-[color:var(--color-stamp)]"
+                  : ""
+              }`}
+            >
+              <div className="flex items-start justify-between gap-3">
+                <p className="brand-label text-[10px] text-[color:var(--color-pencil)] sm:text-[11px]">
+                  {format(t.stopDetail.cardLabel, { number: caseNumber })}
                 </p>
+                <span
+                  className={`stop-marker stop-marker--list shrink-0${
+                    isStamped ? " stop-marker--visited stop-marker--stamped" : ""
+                  }${
+                    !isStamped && stop.category === "rekonstruiert"
+                      ? " stop-marker--reconstructed"
+                      : ""
+                  }${
+                    !isStamped && stop.category === "fiktiv"
+                      ? " stop-marker--fictional"
+                      : ""
+                  }`}
+                  style={{
+                    position: "relative",
+                    left: "auto",
+                    top: "auto",
+                    backgroundColor: isStamped
+                      ? "var(--color-paper)"
+                      : categoryConfig[stop.category].color,
+                  }}
+                  aria-hidden
+                >
+                  <span className="stop-marker__label">
+                    {isStamped ? (
+                      <StopStamp
+                        stopId={stop.id}
+                        stopNumber={stop.tourNumber}
+                        placeName={stop.name}
+                        category={stop.category}
+                        size="mini"
+                      />
+                    ) : (
+                      String(stop.tourNumber).padStart(2, "0")
+                    )}
+                  </span>
+                </span>
               </div>
-            </div>
 
-            <p className="mt-5 text-sm leading-relaxed text-[color:var(--color-pencil)]">
+              <CategoryBadge category={stop.category} />
+              <h3 className="book-place-name mt-2 text-xl text-ink sm:text-2xl">
+                {stop.name}
+              </h3>
+
+              {isFictional && (
+                <p className="meta-mono mt-2 text-[10px] leading-snug tracking-[0.04em] text-[color:var(--color-pencil)]">
+                  {t.stopDetail.fictionalPlaceNote}
+                </p>
+              )}
+
+              <div className="meta-data mt-4 grid grid-cols-2 gap-x-3 gap-y-1.5 text-[10px] text-[color:var(--color-pencil)] sm:text-xs">
+                <span>{t.stopDetail.caseNo}</span>
+                <span>HF-{caseNumber}</span>
+                <span>{t.stopDetail.district}</span>
+                <span>{stop.district.toUpperCase()}</span>
+                <span>{t.stopDetail.coordinates}</span>
+                <a
+                  href={mapsUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-[color:var(--color-azulejo)] transition hover:underline"
+                >
+                  {formatCoords(stop.lat, stop.lng, isFictional)}
+                </a>
+                <span>{t.stopDetail.volume}</span>
+                <span>{stop.bookRef.toUpperCase()}</span>
+              </div>
+            </article>
+
+            <p className="book-prose mt-5 text-[1.05rem] leading-[1.65] text-[color:var(--color-ink)]">
               {stop.description}
             </p>
 
             {stop.quote && (
-              <details className="mt-4 border border-[color:var(--color-control-border)] bg-[color:var(--color-paper)]">
-                <summary className="meta-mono cursor-pointer px-3 py-2 text-[11px] text-[color:var(--color-pencil)]">
+              <details className="stop-quote-shell mt-5">
+                <summary className="meta-mono cursor-pointer px-3 py-2.5 text-[11px] tracking-[0.08em] text-[color:var(--color-pencil)]">
                   {t.stopDetail.showQuote}
                 </summary>
                 <div className="border-t border-[color:var(--color-control-border)] px-3 py-3">
@@ -147,7 +198,7 @@ export function StopDetail({
               </details>
             )}
 
-            {stop.riddle && isRiddleTour && (
+            {showVerifiedRiddle && stop.riddle && (
               <div className="mt-5">
                 <RiddlePanel
                   riddle={stop.riddle}
@@ -177,12 +228,12 @@ export function StopDetail({
                 href={googleMapsDirectionsUrl(stop.lat, stop.lng)}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="meta-mono flex min-h-11 items-center justify-center border border-[color:var(--color-azulejo)] bg-[color:var(--color-azulejo)] px-4 py-2.5 text-center text-xs text-[color:var(--color-paper)] transition"
+                className="btn-stamp brand-label flex min-h-11 items-center justify-center px-4 py-2.5 text-center text-[11px] tracking-[0.12em]"
               >
                 {t.stopDetail.directions}
               </a>
               <a
-                href={googleMapsSearchUrl(stop.lat, stop.lng)}
+                href={mapsUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="meta-mono py-1 text-center text-[11px] text-[color:var(--color-azulejo)] transition hover:underline"
@@ -199,10 +250,10 @@ export function StopDetail({
           <button
             type="button"
             onClick={handleDone}
-            className={`meta-mono flex min-h-12 w-full items-center justify-center border px-4 py-3 text-xs transition ${
+            className={`brand-label flex min-h-12 w-full items-center justify-center border px-4 py-3 text-[11px] tracking-[0.12em] transition ${
               isStamped
                 ? "border-[color:var(--color-control-border)] bg-[color:var(--color-card)] text-[color:var(--color-pencil)]"
-                : "border-[color:var(--color-ink)] bg-[color:var(--color-ink)] text-[color:var(--color-paper)]"
+                : "btn-stamp"
             }`}
           >
             {isStamped

@@ -1,23 +1,19 @@
 import type { Translations } from "../types";
+import { legalEn } from "../legal/en";
 import { stopsEn } from "../stops/en";
 
 export const en: Translations = {
   meta: {
-    title: "In the Footsteps of Henrik Falkner – Lisbon Crime Tour",
+    title: "Portuguese City Tour – A Lisbon Crime Story by Luis Sellano",
     description:
-      "A literary crime walking tour through Lisbon following the Henrik Falkner series by Luis Sellano.",
+      "A literary walking tour through Lisbon following the Lisbon crime novels by Luis Sellano.",
   },
   hero: {
-    meta: "LISBON FILE / {count} LOCATIONS",
-    title: "Case File: Henrik Falkner",
-    description:
-      "Falkner's uncle collected traces and patterns of crime in the bookshop. This tour follows his index cards: from Bica to Alfama, from clue to clue.",
+    author: "LUIS SELLANO",
+    series: "A LISBON CRIME STORY",
+    title: "Portuguese City Tour",
+    meta: "{count} LOCATIONS · {city}",
     cta: "START TOUR",
-    cardLabel: "INDEX CARD NO. 001",
-    caseNo: "CASE NO.",
-    district: "DISTRICT",
-    coordinates: "COORDINATES",
-    volume: "VOLUME",
   },
   mood: {
     ariaLabel: "Mood",
@@ -27,6 +23,7 @@ export const en: Translations = {
   footer: {
     text: "Unofficial fan project. The novel characters and plots are from the Lisbon crime series by Luis Sellano (Heyne Verlag). The bookshop location is a fan placement.",
   },
+  legal: legalEn,
   fado: {
     meta: "FADO · SOUNDTRACK",
     title: "Lisbon evening light",
@@ -40,6 +37,26 @@ export const en: Translations = {
   legend: {
     title: "Marker legend",
     subtitle: "Colour coding of stops on the map",
+    reconstructedNote:
+      "Volume 8 names no specific streets — these places reconstruct the novel's setting; they are not verified crime scenes.",
+    fictionalNote: "Fiction only — position per the novel map",
+  },
+  cities: {
+    ariaLabel: "Choose case file",
+    lisboaTab: "LISBON FILE",
+    cascaisTab: "CASCAIS FILE",
+    lisboaShort: "LISBON",
+    cascaisShort: "CASCAIS",
+    lisboaAkte: "Lisbon File",
+    cascaisAkte: "Cascais File",
+    lisboaSubtitle: "Lisbon case · Volumes 1–7, 9–11",
+    cascaisSubtitle: "Cascais case · Volume 8",
+    progress: "{count}/{total}",
+    sealed: "SEALED",
+    antiquaryNote:
+      "NOTE FROM THE ANTIQUARIAN: The Cascais file follows the original Volume 8 novel map. Four locations are real and confirmed — three exist only between two covers.",
+    expandAkte: "Expand case file",
+    collapseAkte: "Collapse case file",
   },
   workspace: {
     ariaLabel: "More case files",
@@ -53,8 +70,10 @@ export const en: Translations = {
   infoCards: {
     title: "Case notes",
     full: [
-      { label: "Total distance", value: "~6–7 km" },
-      { label: "Walking time", value: "~2 hours" },
+      { label: "Start", value: "Bookshop / Bica" },
+      { label: "Finish", value: "Praça do Comércio" },
+      { label: "Total distance", value: "~5 km" },
+      { label: "Walking time", value: "~1.5–2 hours" },
       { label: "With breaks", value: "about half to a full day" },
       { label: "Best day", value: "Saturday (Feira da Ladra)" },
       {
@@ -64,6 +83,8 @@ export const en: Translations = {
       },
     ],
     short: [
+      { label: "Start", value: "Bookshop / Bica" },
+      { label: "Finish", value: "Praça do Comércio" },
       { label: "Total distance", value: "~3.5 km" },
       { label: "Walking time", value: "~1 hour" },
       { label: "With breaks", value: "~2.5 hours" },
@@ -94,10 +115,9 @@ export const en: Translations = {
     geoDenied: "Location access denied.",
     geoFailed: "Could not determine location.",
     fullTourGoogleMaps: "Tour in Google Maps",
-    legAll: "Full tour (stops 1–16)",
-    leg1: "Stage 1 (stops 1–8)",
-    leg2: "Stage 2 (stops 8–16)",
+    legPart: "Stage {index} (stops {from}–{to})",
     scrollZoomHint: "Click map, then scroll to zoom",
+    fitRoute: "Center route",
   },
   stopList: {
     currentStop: "Current location",
@@ -128,6 +148,36 @@ export const en: Translations = {
     shortStops: "6 LOCATIONS",
     riddleTitle: "SCAVENGER HUNT",
     riddleStops: "9 LOCATIONS",
+  },
+  tours: {
+    "lisboa-gross": {
+      title: "FULL TOUR",
+      stops: "16 LOCATIONS",
+      stats: "~6–7 km · walking ~2 h",
+      heroText:
+        "In the footsteps of Henrik Falkner: from Bica and Chiado via Rossio up to the Castelo ridge, through the Alfama — ending at the Tagus.",
+    },
+    "lisboa-kurz": {
+      title: "SHORT TOUR",
+      stops: "6 LOCATIONS",
+      stats: "~3.5 km · walking ~1 h",
+      heroText:
+        "The essentials in two and a half hours: antiquarian bookshop, Chiado, Rossio, Baixa — finale with a view over the Alfama.",
+    },
+    "lisboa-raetsel": {
+      title: "SCAVENGER HUNT",
+      stops: "9 LOCATIONS",
+      stats: "~4 km · with riddles",
+      heroText:
+        "A scavenger hunt with riddles: from the Castelo down through the Alfama to the Tagus — and back to the antiquarian bookshop.",
+    },
+    cascais: {
+      title: "CRIME SCENE TOUR",
+      stops: "9 LOCATIONS",
+      stats: "~4 km · walking ~1.25 h · flat",
+      heroText:
+        "The case from Volume 8: from the station to the crime scene at Praia da Duquesa, through town to the marina — epilogue on the cliffs.",
+    },
   },
   direction: {
     ariaLabel: "Tour direction",
@@ -187,6 +237,11 @@ export const en: Translations = {
   stopDetail: {
     close: "Close",
     backToList: "Back to list",
+    cardLabel: "INDEX CARD NO. {number}",
+    caseNo: "CASE NO.",
+    district: "DISTRICT",
+    coordinates: "COORDINATES",
+    volume: "VOLUME",
     openInMaps: "Open in Google Maps",
     directions: "Directions here",
     prev: "Previous",
@@ -196,17 +251,21 @@ export const en: Translations = {
     undoDone: "Undo done",
     empty: "Select a stop on the map or from the list",
     showQuote: "Quote from the book",
+    fictionalPlaceNote:
+      "FICTIONAL PLACE — position per the novel map, no real address",
   },
   categories: {
     buchszene: "Actual book scene",
     kulisse: "Setting & backdrop",
     stadttour: "Henrik's city tip",
     fan: "Fan placement",
+    rekonstruiert: "Book setting — reconstructed",
+    fiktiv: "Fictional place — novel map",
   },
   stops: stopsEn,
   food: {
     ariaLabel: "Henrik's menu",
-    meta: "EVIDENCE · CULINARY (5)",
+    meta: "EVIDENCE · CULINARY ({count})",
     title: "Henrik's menu",
     markTasted: "Mark {name} as tasted",
     items: {
@@ -235,6 +294,11 @@ export const en: Translations = {
         name: "Mazagran (iced coffee with lemon)",
         where: "Miradouro da Graça",
         source: "Henrik's refreshment under the pine trees — Volume 2",
+      },
+      mercado: {
+        name: "Petiscos at Mercado da Vila",
+        where: "Mercado da Vila, Cascais",
+        source: "Not a book quote — bonus of the coastal tour",
       },
     },
   },
@@ -390,15 +454,107 @@ export const en: Translations = {
         recommendation:
           "Henrik's ritual: at night, when the lights dim and the first note sounds. Complements the Spotify soundtrack.",
       },
+      "brasserie-entrecote": {
+        name: "La Brasserie de L'Entrecôte",
+        area: "Marina de Cascais",
+        description:
+          "The luxurious coastal counterpart to Café de São Bento. In elegant, classic surroundings everything revolves around perfectly tender entrecôte, finished with a legendary secret herb-butter sauce.",
+        recommendation:
+          "Tip: Ideal for a stylish dinner overlooking the yacht marina.",
+      },
+      "churrasqueira-viveiro": {
+        name: "Churrasqueira do Viveiro",
+        area: "Hills above Cascais (Adroana)",
+        description:
+          "A rough insider tip deep in the hills above town. No tourist fluff — a huge open charcoal grill, the buzz of local families, and the best beef ribs in the area.",
+        recommendation:
+          "Tip: Order the giant 'Costeleta de Novilho' (veal chop) medium-rare.",
+      },
+      "visconde-da-luz": {
+        name: "Restaurante Visconde da Luz",
+        area: "Jardim Visconde da Luz",
+        description:
+          "A wonderfully traditional, almost museum-like restaurant by Cascais' historic town park. Heavy wooden chairs under chandeliers — exactly the backdrop for Henrik's toughest witness interviews.",
+        recommendation:
+          "Tip: The oven-braised, butter-tender lamb (Cabrito Assado).",
+      },
+      "mar-do-inferno": {
+        name: "Mar do Inferno",
+        area: "Boca do Inferno",
+        description:
+          "Right on the cliffs of the Mouth of Hell. Despite the prominent spot, a true local favourite for the freshest crab, goose barnacles (percebes) and grilled wild fish.",
+        recommendation:
+          "Tip: Share the spectacular stuffed crab shell (Sapateira Recheada).",
+      },
+      "furnas-do-guincho": {
+        name: "Furnas do Guincho",
+        area: "Estrada do Guincho",
+        description:
+          "Breathtakingly built into the cliffs above the roaring ocean. While waves crash beneath the panorama windows, you eat finest salt-crust fish. Dramatic, melancholic, unforgettable.",
+        recommendation:
+          "Tip: The wild sea bass baked in a salt crust (Robalo ao Sal).",
+      },
+      "taberna-clandestina": {
+        name: "Taberna Clandestina Cascais",
+        area: "Old-town lanes",
+        description:
+          "A tiny, wonderfully dim jewel in the brick alleyways. Perfect for a late secret meeting over excellent Portuguese red, tender beef carpaccio and hand-picked cheese.",
+        recommendation:
+          "Tip: A late glass of heavy Alentejo red in the shaded interior.",
+      },
+      "museu-castro-guimaraes": {
+        name: "Library at Museu Condes de Castro Guimarães",
+        area: "Parque Marechal Carmona",
+        description:
+          "A neo-Gothic manor by the water — the ultimate treasure room for any antiquarian. The historic castle library holds over 25,000 old volumes, rare folios and a priceless illuminated chronicle from 1505. Every inch breathes the dark history of the country.",
+        recommendation:
+          "Tip: Look up at the carved wooden ceilings while you breathe in centuries-old parchment.",
+      },
+      "livraria-deja-lu": {
+        name: "Livraria Déjà Lu",
+        area: "Cais da Cidadela",
+        description:
+          "Hidden in the thick walls of the Cidadela fortress, this beautiful niche second-hand bookshop — quirky shelves, old armchairs, stacks of literary finds — feels like a charming miniature of Henrik's own bookshop on the Riviera.",
+        recommendation:
+          "Tip: Leave a small donation and dig for hidden old travel accounts.",
+      },
+      "bar-estoril-palacio": {
+        name: "Bar Estoril (Hotel Palácio)",
+        area: "Estoril",
+        description:
+          "The legendary WWII spy bar. Allied and Axis agents sat in thick smoke only a few tables apart while Portugal stayed officially neutral. Ian Fleming found James Bond inspiration at this very counter. Heavy leather chairs, dim light, pure historical melancholy.",
+        recommendation:
+          "Tip: Order a classic martini or an old dry white port and study the agent photographs on the walls.",
+      },
+      "farol-santa-marta-guide": {
+        name: "Farol de Santa Marta",
+        area: "Cascais coast",
+        description:
+          "The iconic blue-and-white striped lighthouse beside a historic manor. A place of maritime saudade, where the night signal guides lonely sailors — for Henrik the perfect visual refuge when the case hits a dead end.",
+        recommendation:
+          "Tip: Come at blue hour, sit on the rough cliffs by the tower and listen to the dull thud of the waves.",
+      },
+      "cabo-da-roca": {
+        name: "Cabo da Roca (Europe's westernmost point)",
+        area: "Sintra–Cascais coastal road",
+        description:
+          "The westernmost point of mainland Europe. A wind-lashed, lonely lighthouse on a 140-metre sheer cliff above the roaring Atlantic. Here Europe ends — a deeply melancholic, raw place that mirrors Henrik Falkner's inner fracture.",
+        recommendation:
+          "Tip: Bring a jacket. The wind cuts sharp and sweeps every unnecessary thought from your head.",
+      },
     },
   },
   laufzettel: {
     ariaLabel: "Progress sheet",
     meta: "PROGRESS SHEET · LISBON FILE",
+    metaCascais: "PROGRESS SHEET · CASCAIS FILE",
     title: "Investigation log",
-    caseClosed: "SEALED IN WAX",
+    caseClosed: "CASE CLOSED",
     allSighted: "{total} OF {total} LOCATIONS SIGHTED",
     sighted: "SIGHTED: {count} / {total}",
+    totalSighted: "TOTAL: {count} / {total} LOCATIONS",
+    allCasesClosed: "ALL CASE FILES CLOSED",
+    allCasesSubtitle: "Lisbon & Cascais · {total} locations",
     quote: "Case closed. Time for a Vinho Verde.",
     fullyTasted: "FULLY TASTED",
     resetProgress: "Start over",

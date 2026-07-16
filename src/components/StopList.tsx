@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import type { RouteStop } from "../utils/tour";
-import type { TourType } from "../utils/tour";
+import type { RouteStop } from "../utils/route";
+import type { TourType } from "../utils/route";
 import { getCategoryConfig } from "../utils/categories";
 import { isStopUnlocked } from "../utils/riddle";
 import { useI18n } from "../i18n";
@@ -128,7 +128,15 @@ export function StopList({
                 <span
                   className={`stop-marker stop-marker--list${
                     isActive ? " stop-marker--active" : ""
-                  }${isStamped ? " stop-marker--visited stop-marker--stamped" : ""}`}
+                  }${isStamped ? " stop-marker--visited stop-marker--stamped" : ""}${
+                    !isStamped && stop.category === "rekonstruiert"
+                      ? " stop-marker--reconstructed"
+                      : ""
+                  }${
+                    !isStamped && stop.category === "fiktiv"
+                      ? " stop-marker--fictional"
+                      : ""
+                  }`}
                   style={{
                     backgroundColor: isStamped
                       ? "var(--color-paper)"
@@ -169,7 +177,7 @@ export function StopList({
                         : "border-l-2 border-transparent"
                     } ${isStamped ? "opacity-85" : ""}`}
                   >
-                    <h3 className="truncate text-[15px] leading-snug text-ink sm:text-base">
+                    <h3 className="book-place-name truncate text-[15px] text-ink sm:text-base">
                       {isLocked
                         ? `Fundort ${String(stop.tourNumber).padStart(2, "0")}`
                         : stop.name}
@@ -190,9 +198,9 @@ export function StopList({
                       aria-label={format(t.stopList.markVisited, {
                         number: stop.tourNumber,
                       })}
-                      className={`meta-mono shrink-0 min-h-11 min-w-[5.5rem] border px-2.5 py-2 text-[10px] transition sm:min-w-[6.5rem] sm:text-[11px] ${
+                      className={`brand-label shrink-0 min-h-11 min-w-[5.5rem] border px-2.5 py-2 text-[10px] tracking-[0.1em] transition sm:min-w-[6.5rem] sm:text-[11px] ${
                         isStamped
-                          ? "border-[color:var(--color-azulejo)] bg-[color:var(--color-azulejo)] text-[color:var(--color-paper)]"
+                          ? "border-[color:var(--color-stamp)] bg-[color:var(--color-stamp)] text-[color:var(--color-paper)]"
                           : "border-[color:var(--color-ink)] bg-[color:var(--color-ink)] text-[color:var(--color-paper)]"
                       }`}
                     >

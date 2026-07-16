@@ -1,10 +1,11 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   gastroMapsUrl,
   type GastroCategory,
   type GastroFilter,
   type GastroRestaurant,
 } from "../data/gastro";
+import type { CityId } from "../data/types";
 import { useI18n } from "../i18n";
 
 const FILTERS: GastroFilter[] = [
@@ -23,19 +24,40 @@ function categoryClass(category: GastroCategory): string {
 }
 
 interface GastroGuideProps {
+  cityId: CityId;
   /** When true, the list is always visible (no collapse header). */
   alwaysOpen?: boolean;
 }
 
-export function GastroGuide({ alwaysOpen = false }: GastroGuideProps) {
+export function GastroGuide({ cityId, alwaysOpen = false }: GastroGuideProps) {
   const { t, format, gastroItems } = useI18n();
   const [open, setOpen] = useState(alwaysOpen);
   const [filter, setFilter] = useState<GastroFilter>("all");
 
+  const cityItems = useMemo(
+    () => gastroItems.filter((item) => item.cityId === cityId),
+    [gastroItems, cityId],
+  );
+
   const filtered = useMemo(() => {
-    if (filter === "all") return gastroItems;
-    return gastroItems.filter((item) => item.category === filter);
-  }, [filter, gastroItems]);
+    if (filter === "all") return cityItems;
+    return cityItems.filter((item) => item.category === filter);
+  }, [filter, cityItems]);
+
+  const availableFilters = useMemo(() => {
+    const present = new Set(cityItems.map((item) => item.category));
+    return FILTERS.filter((f) => f === "all" || present.has(f));
+  }, [cityItems]);
+
+  useEffect(() => {
+    setFilter("all");
+  }, [cityId]);
+
+  useEffect(() => {
+    if (filter !== "all" && !availableFilters.includes(filter)) {
+      setFilter("all");
+    }
+  }, [filter, availableFilters]);
 
   const filterLabel = (f: GastroFilter) =>
     f === "all" ? t.gastro.filters.all : t.gastro.filters[f];
@@ -62,7 +84,7 @@ export function GastroGuide({ alwaysOpen = false }: GastroGuideProps) {
             </p>
             {!isOpen && (
               <p className="meta-mono mt-2 text-[10px] text-[color:var(--color-pencil)]">
-                {format(t.gastro.countHint, { count: gastroItems.length })}
+                {format(t.gastro.countHint, { count: cityItems.length })}
               </p>
             )}
           </div>
@@ -108,7 +130,7 @@ export function GastroGuide({ alwaysOpen = false }: GastroGuideProps) {
             role="group"
             aria-label={t.gastro.filterAria}
           >
-            {FILTERS.map((f) => (
+            {availableFilters.map((f) => (
               <button
                 key={f}
                 type="button"

@@ -42,7 +42,7 @@ export function RiddlePanel({ riddle, solved, onSubmit }: RiddlePanelProps) {
       <p className="meta-mono text-xs tracking-[0.1em] text-[color:var(--color-pencil)]">
         {t.riddle.title}
       </p>
-      <p className="mt-2 text-sm leading-relaxed text-ink">{riddle.question}</p>
+      <p className="mt-2 book-prose text-[1.05rem] leading-[1.65] text-ink">{riddle.question}</p>
 
       <form onSubmit={handleSubmit} className="mt-3 flex gap-2">
         <input

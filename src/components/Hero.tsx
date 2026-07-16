@@ -1,30 +1,41 @@
-import { useI18n } from "../i18n";
 import { LanguageSwitcher } from "./LanguageSwitcher";
 import { MoodToggle } from "./MoodToggle";
+import type { CityId, Tour } from "../data/types";
+import { useI18n } from "../i18n";
 
-export function Hero() {
-  const { t, format, stops } = useI18n();
+interface HeroProps {
+  cityId: CityId;
+  activeTour: Tour;
+}
+
+export function Hero({ cityId, activeTour }: HeroProps) {
+  const { t, format } = useI18n();
+  const cityName =
+    cityId === "cascais" ? t.cities.cascaisShort : t.cities.lisboaShort;
+  const tourCopy = t.tours[activeTour.id];
 
   return (
-    <header className="border-b border-[color:var(--color-control-border)] px-4 py-4 sm:px-8 sm:py-6">
-      <div className="mx-auto max-w-6xl">
-        <div className="mb-4 flex flex-wrap items-center justify-end gap-2">
+    <header className="page-hero">
+      <div className="page-hero__sky" aria-hidden />
+      <div className="page-hero__glow" aria-hidden />
+      <div className="page-hero__fade" aria-hidden />
+      <div className="page-hero__inner">
+        <div className="page-hero__toolbar">
           <MoodToggle />
           <LanguageSwitcher />
         </div>
-        <p className="meta-mono text-[10px] text-[color:var(--color-pencil)] sm:text-xs">
-          {format(t.hero.meta, { count: stops.length })}
+
+        <p className="page-hero__author brand-author">{t.hero.author}</p>
+        <p className="page-hero__series brand-series">{t.hero.series}</p>
+        <h1 className="page-hero__title">{t.hero.title}</h1>
+        <p className="page-hero__meta brand-label">
+          {format(t.hero.meta, {
+            count: activeTour.stopIds.length,
+            city: cityName,
+          })}
         </p>
-        <h1 className="mt-1.5 max-w-[18ch] text-3xl leading-tight text-ink sm:text-5xl">
-          {t.hero.title}
-        </h1>
-        <p className="mt-2 max-w-[42ch] text-sm leading-relaxed text-[color:var(--color-pencil)] sm:mt-3 sm:text-base">
-          {t.hero.description}
-        </p>
-        <a
-          href="#tour"
-          className="meta-mono mt-4 inline-flex min-h-11 items-center border border-[color:var(--color-stamp)] bg-[color:var(--color-stamp)] px-4 py-2.5 text-xs text-[color:var(--color-paper)]"
-        >
+        <p className="page-hero__text">{tourCopy.heroText}</p>
+        <a href="#tour" className="page-hero__cta brand-label">
           {t.hero.cta}
         </a>
       </div>

@@ -1,4 +1,6 @@
+import { cities } from "../data/cities";
 import { stopBases } from "../data/stops";
+import type { CityId } from "../data/types";
 
 const TILE_SUBDOMAINS = ["a", "b", "c", "d"] as const;
 const BASE_LAYERS = [
@@ -14,7 +16,7 @@ const LNG_PAD = 0.01;
 const MIN_ZOOM = 14;
 const MAX_ZOOM = 16;
 
-const PREFETCH_FLAG = "luis-sellano-tiles-prefetched-v1";
+const PREFETCH_FLAG = "luis-sellano-tiles-prefetched-v2";
 const CONCURRENCY = 6;
 
 function lon2tile(lon: number, zoom: number): number {
@@ -29,13 +31,14 @@ function lat2tile(lat: number, zoom: number): number {
   );
 }
 
-function tourBounds() {
+function cityBounds(cityId: CityId) {
+  const stops = stopBases.filter((s) => s.cityId === cityId);
   let minLat = Infinity;
   let maxLat = -Infinity;
   let minLng = Infinity;
   let maxLng = -Infinity;
 
-  for (const stop of stopBases) {
+  for (const stop of stops) {
     minLat = Math.min(minLat, stop.lat);
     maxLat = Math.max(maxLat, stop.lat);
     minLng = Math.min(minLng, stop.lng);
@@ -51,24 +54,27 @@ function tourBounds() {
 }
 
 function buildTileUrls(): string[] {
-  const bounds = tourBounds();
   const urls: string[] = [];
   let subdomainIndex = 0;
 
-  for (let z = MIN_ZOOM; z <= MAX_ZOOM; z++) {
-    const xMin = lon2tile(bounds.minLng, z);
-    const xMax = lon2tile(bounds.maxLng, z);
-    const yMin = lat2tile(bounds.maxLat, z);
-    const yMax = lat2tile(bounds.minLat, z);
+  for (const city of cities) {
+    const bounds = cityBounds(city.id);
 
-    for (let x = xMin; x <= xMax; x++) {
-      for (let y = yMin; y <= yMax; y++) {
-        for (const layer of BASE_LAYERS) {
-          const sub = TILE_SUBDOMAINS[subdomainIndex % TILE_SUBDOMAINS.length];
-          subdomainIndex += 1;
-          urls.push(
-            `https://${sub}.basemaps.cartocdn.com/${layer}/${z}/${x}/${y}@2x.png`,
-          );
+    for (let z = MIN_ZOOM; z <= MAX_ZOOM; z++) {
+      const xMin = lon2tile(bounds.minLng, z);
+      const xMax = lon2tile(bounds.maxLng, z);
+      const yMin = lat2tile(bounds.maxLat, z);
+      const yMax = lat2tile(bounds.minLat, z);
+
+      for (let x = xMin; x <= xMax; x++) {
+        for (let y = yMin; y <= yMax; y++) {
+          for (const layer of BASE_LAYERS) {
+            const sub = TILE_SUBDOMAINS[subdomainIndex % TILE_SUBDOMAINS.length];
+            subdomainIndex += 1;
+            urls.push(
+              `https://${sub}.basemaps.cartocdn.com/${layer}/${z}/${x}/${y}@2x.png`,
+            );
+          }
         }
       }
     }
@@ -101,7 +107,7 @@ async function fetchWithLimit(
 }
 
 /**
- * Prefetches CARTO tiles for the tour bounding box so the Service Worker
+ * Prefetches CARTO tiles for each city's tour bounding box so the Service Worker
  * can serve the map offline after one online visit (e.g. hotel Wi‑Fi).
  */
 export function prefetchTourMapTiles(): void {

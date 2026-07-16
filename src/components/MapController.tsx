@@ -1,7 +1,8 @@
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import { useMap } from "react-leaflet";
 import { latLngBounds } from "leaflet";
-import type { RouteStop } from "../utils/tour";
+import type { RouteStop } from "../utils/route";
+import type { CityId } from "../data/types";
 
 interface ScrollWheelZoomHandlerProps {
   onActiveChange?: (active: boolean) => void;
@@ -62,26 +63,85 @@ interface MapControllerProps {
   routeStops: RouteStop[];
   flyToStop: RouteStop | null;
   resetKey: string;
+  cityId: CityId;
+  /** Increment to re-fit the map to all route stops (e.g. "Zurück zur Route"). */
+  fitNonce?: number;
+}
+
+function prefersReducedMotion(): boolean {
+  return window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+}
+
+function fitPadding(): {
+  paddingTopLeft: [number, number];
+  paddingBottomRight: [number, number];
+} {
+  const isMobile = window.matchMedia("(max-width: 768px)").matches;
+  // Marker radius ~22px + zoom controls / Google Maps chip / safe edge
+  if (isMobile) {
+    return {
+      paddingTopLeft: [64, 56],
+      paddingBottomRight: [120, 56],
+    };
+  }
+  return {
+    paddingTopLeft: [80, 72],
+    paddingBottomRight: [96, 72],
+  };
 }
 
 export function MapController({
   routeStops,
   flyToStop,
   resetKey,
+  cityId,
+  fitNonce = 0,
 }: MapControllerProps) {
   const map = useMap();
+  const prevCityIdRef = useRef(cityId);
+  const prevFitNonceRef = useRef(fitNonce);
+  const skipFlyAfterFitRef = useRef(false);
 
   useEffect(() => {
     if (routeStops.length === 0) return;
+
+    map.invalidateSize();
+
     const bounds = latLngBounds(routeStops.map((s) => [s.lat, s.lng]));
-    const isMobile = window.matchMedia("(max-width: 768px)").matches;
-    const padding: [number, number] = isMobile ? [24, 24] : [48, 48];
-    map.fitBounds(bounds, { padding, animate: true });
-  }, [map, resetKey, routeStops]);
+    const padding = fitPadding();
+    const citySwitched = prevCityIdRef.current !== cityId;
+    prevCityIdRef.current = cityId;
+
+    const fitRequested = prevFitNonceRef.current !== fitNonce;
+    prevFitNonceRef.current = fitNonce;
+
+    const reduced = prefersReducedMotion();
+    const base = {
+      ...padding,
+      maxZoom: 16,
+      animate: !reduced,
+    };
+
+    skipFlyAfterFitRef.current = true;
+
+    if (citySwitched || fitRequested) {
+      map.flyToBounds(bounds, {
+        ...base,
+        duration: reduced ? 0 : fitRequested ? 0.8 : 1.2,
+      });
+      return;
+    }
+
+    map.fitBounds(bounds, base);
+  }, [map, resetKey, routeStops, cityId, fitNonce]);
 
   useEffect(() => {
     if (!flyToStop) return;
-    map.flyTo([flyToStop.lat, flyToStop.lng], 13.5, { duration: 0.9 });
+    if (skipFlyAfterFitRef.current) {
+      skipFlyAfterFitRef.current = false;
+      return;
+    }
+    map.flyTo([flyToStop.lat, flyToStop.lng], 15, { duration: 0.9 });
   }, [map, flyToStop]);
 
   return null;
@@ -96,7 +156,7 @@ export function UserLocationController({ position }: UserLocationControllerProps
 
   useEffect(() => {
     if (!position) return;
-    map.flyTo(position, Math.max(map.getZoom(), 13.5), { duration: 0.7 });
+    map.flyTo(position, Math.max(map.getZoom(), 15), { duration: 0.7 });
   }, [map, position]);
 
   return null;

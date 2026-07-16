@@ -1,23 +1,19 @@
 import type { Translations } from "../types";
+import { legalDe } from "../legal/de";
 import { stopsDe } from "../stops/de";
 
 export const de: Translations = {
   meta: {
-    title: "Auf den Spuren von Henrik Falkner – Lissabon Krimi-Tour",
+    title: "Portugiesische Stadttour – Ein Lissabon-Krimi von Luis Sellano",
     description:
-      "Literarische Krimi-Stadttour durch Lissabon auf den Spuren der Henrik-Falkner-Reihe von Luis Sellano.",
+      "Literarische Stadttour durch Lissabon auf den Spuren der Lissabon-Krimis von Luis Sellano.",
   },
   hero: {
-    meta: "AKTE LISSABON / {count} FUNDORTE",
-    title: "Ermittlungsakte Henrik Falkner",
-    description:
-      "Falkners Onkel hat im Antiquariat Spuren und Tatmuster gesammelt. Diese Tour folgt seinen Karteikarten: von Bica bis Alfama, von Beweisstück zu Beweisstück.",
+    author: "LUIS SELLANO",
+    series: "EIN LISSABON-KRIMI",
+    title: "Portugiesische Stadttour",
+    meta: "{count} FUNDORTE · {city}",
     cta: "TOUR STARTEN",
-    cardLabel: "KARTEIKARTE NR. 001",
-    caseNo: "FALL-NR.",
-    district: "VIERTEL",
-    coordinates: "KOORDINATEN",
-    volume: "BAND",
   },
   mood: {
     ariaLabel: "Stimmung",
@@ -27,6 +23,7 @@ export const de: Translations = {
   footer: {
     text: "Inoffizielles Fan-Projekt. Die Romanfiguren und -handlungen stammen aus der Lissabon-Krimi-Reihe von Luis Sellano (Heyne Verlag). Der Standort des Antiquariats ist eine Fan-Verortung.",
   },
+  legal: legalDe,
   fado: {
     meta: "FADO · SOUNDTRACK",
     title: "Lissabonner Abendlicht",
@@ -40,6 +37,26 @@ export const de: Translations = {
   legend: {
     title: "Markierungslogik",
     subtitle: "Farbcodierung der Stopps auf der Karte",
+    reconstructedNote:
+      "Band 8 nennt keine konkreten Straßen — diese Orte rekonstruieren die Kulisse des Romans, sie sind keine belegten Schauplätze.",
+    fictionalNote: "Nur im Roman — Lage gemäß Romankarte",
+  },
+  cities: {
+    ariaLabel: "Akte wählen",
+    lisboaTab: "AKTE LISSABON",
+    cascaisTab: "AKTE CASCAIS",
+    lisboaShort: "LISSABON",
+    cascaisShort: "CASCAIS",
+    lisboaAkte: "Akte Lissabon",
+    cascaisAkte: "Akte Cascais",
+    lisboaSubtitle: "Akte Lissabon · Bände 1–7, 9–11",
+    cascaisSubtitle: "Akte Cascais · Band 8",
+    progress: "{count}/{total}",
+    sealed: "VERSIEGELT",
+    antiquaryNote:
+      "VERMERK DES ANTIQUARS: Die Akte Cascais folgt der Original-Romankarte aus Band 8. Vier Fundorte sind real und bestätigt — drei existieren nur zwischen zwei Buchdeckeln.",
+    expandAkte: "Akte aufklappen",
+    collapseAkte: "Akte einklappen",
   },
   workspace: {
     ariaLabel: "Weitere Akten",
@@ -53,8 +70,10 @@ export const de: Translations = {
   infoCards: {
     title: "Aktennotizen",
     full: [
-      { label: "Gesamtstrecke", value: "~6–7 km" },
-      { label: "Reine Gehzeit", value: "~2 Stunden" },
+      { label: "Start", value: "Antiquariat / Bica" },
+      { label: "Schluss", value: "Praça do Comércio" },
+      { label: "Gesamtstrecke", value: "~5 km" },
+      { label: "Reine Gehzeit", value: "~1,5–2 Stunden" },
       { label: "Mit Pausen", value: "ca. einen halben bis ganzen Tag" },
       { label: "Bester Tag", value: "Samstag (Feira da Ladra)" },
       {
@@ -64,6 +83,8 @@ export const de: Translations = {
       },
     ],
     short: [
+      { label: "Start", value: "Antiquariat / Bica" },
+      { label: "Schluss", value: "Praça do Comércio" },
       { label: "Gesamtstrecke", value: "~3,5 km" },
       { label: "Reine Gehzeit", value: "~1 Stunde" },
       { label: "Mit Pausen", value: "~2,5 Stunden" },
@@ -94,10 +115,9 @@ export const de: Translations = {
     geoDenied: "Standortzugriff verweigert.",
     geoFailed: "Standort konnte nicht ermittelt werden.",
     fullTourGoogleMaps: "Tour in Google Maps",
-    legAll: "Gesamte Tour (Stopps 1–16)",
-    leg1: "Etappe 1 (Stopps 1–8)",
-    leg2: "Etappe 2 (Stopps 8–16)",
+    legPart: "Etappe {index} (Stopps {from}–{to})",
     scrollZoomHint: "Karte anklicken, dann mit Mausrad zoomen",
+    fitRoute: "Route zentrieren",
   },
   stopList: {
     currentStop: "Aktueller Fundort",
@@ -128,6 +148,36 @@ export const de: Translations = {
     shortStops: "6 FUNDORTE",
     riddleTitle: "SCHNITZELJAGD",
     riddleStops: "9 FUNDORTE",
+  },
+  tours: {
+    "lisboa-gross": {
+      title: "GROSSE TOUR",
+      stops: "16 FUNDORTE",
+      stats: "~6–7 km · Gehzeit ~2 h",
+      heroText:
+        "Auf den Spuren von Henrik Falkner: von Bica und Chiado über den Rossio auf den Castelo-Grat, durch die Alfama — und endet am Tejo.",
+    },
+    "lisboa-kurz": {
+      title: "KURZTOUR",
+      stops: "6 FUNDORTE",
+      stats: "~3,5 km · Gehzeit ~1 h",
+      heroText:
+        "Die Essentials in zweieinhalb Stunden: Antiquariat, Chiado, Rossio, Baixa — Finale mit Blick über die Alfama.",
+    },
+    "lisboa-raetsel": {
+      title: "SCHNITZELJAGD",
+      stops: "9 FUNDORTE",
+      stats: "~4 km · mit Rätseln",
+      heroText:
+        "Schnitzeljagd mit Rätseln: vom Castelo durch die Alfama hinunter zum Tejo — und zurück zum Antiquariat.",
+    },
+    cascais: {
+      title: "TATORT-TOUR",
+      stops: "9 FUNDORTE",
+      stats: "~4 km · Gehzeit ~1,25 h · flach",
+      heroText:
+        "Der Fall aus Band 8: vom Bahnhof zum Tatort an der Praia da Duquesa, durch den Ort zur Marina — Epilog an der Steilküste.",
+    },
   },
   direction: {
     ariaLabel: "Tourrichtung",
@@ -187,6 +237,11 @@ export const de: Translations = {
   stopDetail: {
     close: "Schließen",
     backToList: "Zur Liste",
+    cardLabel: "KARTEIKARTE NR. {number}",
+    caseNo: "FALL-NR.",
+    district: "VIERTEL",
+    coordinates: "KOORDINATEN",
+    volume: "BAND",
     openInMaps: "In Google Maps öffnen",
     directions: "Route hierhin",
     prev: "Zurück",
@@ -196,17 +251,21 @@ export const de: Translations = {
     undoDone: "Erledigt zurücknehmen",
     empty: "Fundort auf der Karte oder in der Liste wählen",
     showQuote: "Zitat aus dem Buch",
+    fictionalPlaceNote:
+      "FIKTIVER ORT — Lage gemäß Romankarte, keine reale Adresse",
   },
   categories: {
     buchszene: "Echte Buchszene",
     kulisse: "Kulisse & Handlungsumfeld",
     stadttour: "Henriks Stadttour-Tipp",
     fan: "Fan-Verortung",
+    rekonstruiert: "Buchkulisse — rekonstruiert",
+    fiktiv: "Fiktiver Ort — Romankarte",
   },
   stops: stopsDe,
   food: {
     ariaLabel: "Henriks Speisekarte",
-    meta: "BEWEISSTÜCKE · KULINARISCH (5)",
+    meta: "BEWEISSTÜCKE · KULINARISCH ({count})",
     title: "Henriks Speisekarte",
     markTasted: "{name} als verkostet markieren",
     items: {
@@ -235,6 +294,11 @@ export const de: Translations = {
         name: "Mazagran (Eiskaffee mit Zitrone)",
         where: "Miradouro da Graça",
         source: "Henriks Erfrischung unter den Nadelbäumen — Band 2",
+      },
+      mercado: {
+        name: "Petiscos im Mercado da Vila",
+        where: "Mercado da Vila, Cascais",
+        source: "Kein Buchzitat — Bonus der Küsten-Tour",
       },
     },
   },
@@ -390,15 +454,107 @@ export const de: Translations = {
         recommendation:
           "Henriks Ritual: abends, wenn das Licht dimmt und die erste Note erklingt. Ergänzt den Spotify-Soundtrack.",
       },
+      "brasserie-entrecote": {
+        name: "La Brasserie de L'Entrecôte",
+        area: "Marina de Cascais",
+        description:
+          "Das luxuriöse Pendant zum Café de São Bento an der Küste. In edlem, klassischem Ambiente dreht sich hier alles um das perfekt zarte Entrecôte, übergossen mit einer legendären, geheimen Kräuter-Buttersauce.",
+        recommendation:
+          "Tipp: Perfekt für ein stilvolles Abendessen mit Blick auf die Yachten der High Society.",
+      },
+      "churrasqueira-viveiro": {
+        name: "Churrasqueira do Viveiro",
+        area: "Hügel von Cascais (Adroana)",
+        description:
+          "Ein echter, rauer Insider-Tipp tief in den Hügeln über der Stadt. Hier gibt es keinen Touri-Schnickschnack, sondern einen riesigen offenen Holzkohlegrill, lautes Stimmengewirr lokaler Familien und die besten Rinderrippen der Region.",
+        recommendation:
+          "Tipp: Bestelle die gigantische 'Costeleta de Novilho' (Rinderkotelett) medium-rare.",
+      },
+      "visconde-da-luz": {
+        name: "Restaurante Visconde da Luz",
+        area: "Jardim Visconde da Luz",
+        description:
+          "Ein herrlich traditionelles, fast schon museales Restaurant direkt am historischen Stadtpark von Cascais. Hier speist man auf schweren Holzstühlen unter Kronleuchtern – genau die Kulisse für Henriks zähe Zeugenbefragungen.",
+        recommendation:
+          "Tipp: Das im Ofen geschmorte, butterzarte Lamm (Cabrito Assado).",
+      },
+      "mar-do-inferno": {
+        name: "Mar do Inferno",
+        area: "Boca do Inferno",
+        description:
+          "Direkt an den Klippen des Höllenschlunds gelegen. Trotz der prominenten Lage ein absoluter Liebling der Einheimischen für frischeste Krebse, Seepocken (Percebes) und gegrillten Wildfisch.",
+        recommendation:
+          "Tipp: Die spektakulär gefüllte Krebsschale (Sapateira Recheada) teilen.",
+      },
+      "furnas-do-guincho": {
+        name: "Furnas do Guincho",
+        area: "Estrada do Guincho",
+        description:
+          "Atemberaubend direkt in die Klippen über dem tosenden Ozean gebaut. Während unter den großen Panoramafenstern die Wellen zerschellen, genießt man hier feinsten Fisch im Salzteig. Dramatisch, melancholisch, unvergesslich.",
+        recommendation:
+          "Tipp: Der in einer Salzkruste gebackene Wildbarsch (Robalo ao Sal).",
+      },
+      "taberna-clandestina": {
+        name: "Taberna Clandestina Cascais",
+        area: "Altstadt-Gassen",
+        description:
+          "Ein winziges, wunderbar schummriges Juwel in den verwinkelten Backsteingassen. Perfekt für ein geheimes, spätes Treffen bei hervorragendem portugiesischen Rotwein, mürbem Rinder-Carpaccio und handverlesenem Käse.",
+        recommendation:
+          "Tipp: Ein spätes Glas schweren Alentejo-Rotwein im schattigen Innenbereich genießen.",
+      },
+      "museu-castro-guimaraes": {
+        name: "Bibliothek im Museu Condes de Castro Guimarães",
+        area: "Parque Marechal Carmona",
+        description:
+          "Ein neogotisches Schloss direkt am Wasser, das die ultimative Schatzkammer für jeden Antiquar birgt. Die historische Schlossbibliothek beherbergt über 25.000 alte Bände, seltene Folianten und eine unbezahlbare, illuminierte Chronik aus dem Jahr 1505. Hier atmet jeder Zentimeter die dunkle Geschichte des Landes.",
+        recommendation:
+          "Tipp: Schau dir die kunstvollen, geschnitzten Holzdecken an, während du den Duft von Jahrhunderten altem Pergament einatmest.",
+      },
+      "livraria-deja-lu": {
+        name: "Livraria Déjà Lu",
+        area: "Cais da Cidadela",
+        description:
+          "Versteckt in den dicken, historischen Mauern der Festungsanlage (Cidadela) liegt dieser wunderschöne, nischige Second-Hand-Buchladen. Mit seinen urigen Regalen, alten Sesseln und Bergen von gebrauchten literarischen Schätzen fühlt es sich an wie eine charmante Miniatur-Version von Henriks eigenem Antiquariat an der Riviera.",
+        recommendation:
+          "Tipp: Perfekt, um eine kleine Spende dazulassen und nach versteckten, alten Reiseberichten zu stöbern.",
+      },
+      "bar-estoril-palacio": {
+        name: "Bar Estoril (Im Hotel Palácio)",
+        area: "Estoril",
+        description:
+          "Die legendäre 'Spionage-Bar' des Zweiten Weltkriegs. Hier saßen echte Agenten der Alliierten und der Achsenmächte im dichten Rauch nur wenige Tische voneinander entfernt, während Portugal offiziell neutral war. Ian Fleming holte sich genau an diesem Tresen die Inspiration für James Bond. Schwere Ledersessel, gedimmtes Licht und pure historische Melancholie.",
+        recommendation:
+          "Tipp: Einen klassischen Martini oder einen alten Dry White Port bestellen und die historischen Agenten-Fotografien an den Wänden studieren.",
+      },
+      "farol-santa-marta-guide": {
+        name: "Farol de Santa Marta",
+        area: "Küste von Cascais",
+        description:
+          "Der ikonische, blau-weiß gestreifte Leuchtturm mit direkt angrenzendem, historischem Herrenhaus. Ein Ort voller maritimer Sehnsucht (Saudade), an dem das Lichtsignal nachts den einsamen Seefahrern den Weg weist – für Henrik der perfekte visuelle Zufluchtsort, wenn die Ermittlungen in einer Sackgasse stecken.",
+        recommendation:
+          "Tipp: Komm zur blauen Stunde, setz dich auf die rauen Klippen direkt neben dem Turm und hör dem dumpfen Schlagen der Wellen zu.",
+      },
+      "cabo-da-roca": {
+        name: "Cabo da Roca (Der westlichste Punkt)",
+        area: "Sintra-Cascais Küstenstraße",
+        description:
+          "Der westlichste Punkt des europäischen Festlands. Ein windgepeitschter, einsamer Leuchtturm auf einer 140 Meter hohen, senkrecht abfallenden Klippe über dem tosenden Atlantik. Hier endet Europa – ein zutiefst melancholischer, rauer Ort, der die innere Zerrissenheit von Henrik Falkner perfekt widerspiegelt.",
+        recommendation:
+          "Tipp: Unbedingt eine Jacke mitbringen. Der Wind schneidet hier scharf und fegt jeden unnötigen Gedanken aus dem Kopf.",
+      },
     },
   },
   laufzettel: {
     ariaLabel: "Laufzettel",
     meta: "LAUFZETTEL · AKTE LISSABON",
+    metaCascais: "LAUFZETTEL · AKTE CASCAIS",
     title: "Ermittlungsprotokoll",
-    caseClosed: "MIT SIEGELLACK VERSCHLOSSEN",
+    caseClosed: "FALL ABGESCHLOSSEN",
     allSighted: "{total} VON {total} FUNDORTEN GESICHTET",
     sighted: "GESICHTET: {count} / {total}",
+    totalSighted: "GESAMT: {count} / {total} FUNDORTE",
+    allCasesClosed: "SÄMTLICHE AKTEN GESCHLOSSEN",
+    allCasesSubtitle: "Lissabon & Cascais · {total} Fundorte",
     quote: "Der Fall ist gelöst. Zeit für einen Vinho Verde.",
     fullyTasted: "VOLLSTÄNDIG VERKOSTET",
     resetProgress: "Neu starten",

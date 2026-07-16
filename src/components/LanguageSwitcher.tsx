@@ -14,10 +14,10 @@ export function LanguageSwitcher() {
           key={code}
           type="button"
           onClick={() => setLocale(code)}
-          className={`meta-mono px-3 py-1.5 text-xs transition ${
+          className={`brand-label px-3 py-2 text-[10px] tracking-[0.16em] transition sm:text-[11px] ${
             locale === code
-              ? "bg-[color:var(--color-ink)] text-[color:var(--color-paper)]"
-              : "text-[color:var(--color-ink)] hover:bg-[color:var(--color-card)]"
+              ? "bg-[color:var(--color-azulejo)] text-[color:var(--color-paper)]"
+              : "text-[color:var(--color-pencil)] hover:bg-[color:var(--color-card)] hover:text-ink"
           } ${code !== "de" ? "border-l border-[color:var(--color-control-border)]" : ""}`}
           aria-pressed={locale === code}
         >

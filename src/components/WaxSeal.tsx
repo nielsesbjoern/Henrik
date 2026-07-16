@@ -18,9 +18,9 @@ export function WaxSeal({ animate = false, label, subtitle }: WaxSealProps) {
           <span className="wax-seal__initials">HF</span>
         </span>
       </div>
-      <p className="wax-seal__caption meta-mono">{label}</p>
+      <p className="wax-seal__caption">{label}</p>
       {subtitle && (
-        <p className="wax-seal__subtitle meta-mono">{subtitle}</p>
+        <p className="wax-seal__subtitle">{subtitle}</p>
       )}
     </div>
   );
