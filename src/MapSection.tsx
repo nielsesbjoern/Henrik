@@ -1,0 +1,334 @@
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from "react";
+import { getRouteStops, type TourType } from "./utils/tour";
+import { TourControls } from "./components/TourControls";
+import { WorkspaceTabs } from "./components/WorkspaceTabs";
+import { NextStopNavigator } from "./components/NextStopNavigator";
+import { StopList } from "./components/StopList";
+import { StopDetail } from "./components/StopDetail";
+import { Laufzettel } from "./components/Laufzettel";
+import { HenriksSpeisekarte } from "./components/HenriksSpeisekarte";
+import { GastroGuide } from "./components/GastroGuide";
+import { InvestigatorNotes } from "./components/InvestigatorNotes";
+import { useGeolocation } from "./hooks/useGeolocation";
+import { useEvidencePhotos } from "./hooks/useEvidencePhotos";
+import { isStopUnlocked, getNextUnsolvedStop } from "./utils/riddle";
+import type { RouteStop } from "./utils/tour";
+import type { TourState, VisitedRecord } from "./hooks/useTourState";
+import { useI18n } from "./i18n";
+
+const TourMap = lazy(() => import("./components/TourMap"));
+
+function MapLoading() {
+  const { t } = useI18n();
+  return (
+    <div className="flex h-full w-full items-center justify-center bg-[color:var(--color-card)]">
+      <p className="meta-mono text-xs text-[color:var(--color-pencil)]">{t.map.loading}</p>
+    </div>
+  );
+}
+
+function mergeStampedRecord(solved: VisitedRecord, visited: VisitedRecord): VisitedRecord {
+  return { ...visited, ...solved };
+}
+
+interface MapSectionProps {
+  tourState: TourState;
+}
+
+export function MapSection({ tourState }: MapSectionProps) {
+  const { stops } = useI18n();
+  const [tourType, setTourType] = useState<TourType>("full");
+  const [routeReversed, setRouteReversed] = useState(false);
+  const [selectedStop, setSelectedStop] = useState<RouteStop | null>(null);
+  const [tourMode, setTourMode] = useState(false);
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const {
+    solved,
+    solvedIds,
+    visited,
+    stampedIds,
+    foodChecked,
+    allFoodComplete,
+    freeTour,
+    toggleVisited,
+    submitAnswer,
+    toggleFood,
+    toggleFreeTour,
+    shareProgress,
+    resetProgress,
+    notes,
+    setNotes,
+    animatingId,
+    completionAnimating,
+    triggerCompletionAnimation,
+  } = tourState;
+  const {
+    photos,
+    busyStopId,
+    attachPhoto,
+    removePhoto,
+    clearPhotos,
+  } = useEvidencePhotos();
+  const [mapReady, setMapReady] = useState(false);
+
+  const isRiddleTour = tourType === "riddle";
+  const geoEnabled = isRiddleTour && tourMode;
+  const { position, error: geoError } = useGeolocation({ enabled: geoEnabled });
+
+  const routeStops = useMemo(
+    () => getRouteStops(stops, tourType, routeReversed),
+    [stops, tourType, routeReversed],
+  );
+  const resetKey = `${tourType}-${routeReversed}-${routeStops.map((s) => s.id).join("-")}`;
+  const currentStartName = routeStops[0]?.name ?? "";
+  const stampedRecord = useMemo(
+    () => mergeStampedRecord(solved, visited),
+    [solved, visited],
+  );
+
+  const nextUnsolvedStop = useMemo(
+    () => (isRiddleTour ? getNextUnsolvedStop(routeStops, solvedIds) : null),
+    [isRiddleTour, routeStops, solvedIds],
+  );
+
+  const stampedInRoute = useMemo(
+    () => routeStops.filter((s) => stampedIds.has(s.id)).length,
+    [routeStops, stampedIds],
+  );
+
+  const activeStopId = tourMode
+    ? routeStops[currentIndex]?.id ?? null
+    : selectedStop?.id ?? null;
+
+  const flyToStop = useMemo(() => {
+    if (selectedStop) return selectedStop;
+    if (tourMode && routeStops[currentIndex]) return routeStops[currentIndex];
+    return null;
+  }, [selectedStop, tourMode, routeStops, currentIndex]);
+
+  useEffect(() => {
+    const timer = requestAnimationFrame(() => setMapReady(true));
+    return () => cancelAnimationFrame(timer);
+  }, []);
+
+  useEffect(() => {
+    setSelectedStop(null);
+    setCurrentIndex(0);
+    setTourMode(false);
+  }, [stops]);
+
+  const handleTourTypeChange = useCallback((type: TourType) => {
+    setTourType(type);
+    setSelectedStop(null);
+    setCurrentIndex(0);
+    setTourMode(false);
+  }, []);
+
+  const handleRouteReversedChange = useCallback((reversed: boolean) => {
+    setRouteReversed(reversed);
+    setSelectedStop(null);
+    setCurrentIndex(0);
+    setTourMode(false);
+  }, []);
+
+  const handleStopSelect = useCallback((stop: RouteStop) => {
+    setSelectedStop(stop);
+    if (tourMode) {
+      const idx = routeStops.findIndex((s) => s.id === stop.id);
+      if (idx >= 0) setCurrentIndex(idx);
+    }
+    requestAnimationFrame(() => {
+      document.getElementById("stop-detail")?.scrollIntoView({
+        behavior: "smooth",
+        block: "nearest",
+      });
+    });
+  }, [tourMode, routeStops]);
+
+  const handleCloseDetail = useCallback(() => {
+    setSelectedStop(null);
+  }, []);
+
+  const handleStopClick = useCallback((stop: RouteStop) => {
+    handleStopSelect(stop);
+  }, [handleStopSelect]);
+
+  const handleNavigateToStop = useCallback(
+    (stopId: number) => {
+      const base = stops.find((s) => s.id === stopId);
+      if (!base) return;
+
+      const routeStop: RouteStop =
+        routeStops.find((s) => s.id === stopId) ?? {
+          ...base,
+          tourNumber: stops.findIndex((s) => s.id === stopId) + 1,
+        };
+
+      handleStopSelect(routeStop);
+      document.getElementById("tour")?.scrollIntoView({ behavior: "smooth" });
+    },
+    [stops, routeStops, handleStopSelect],
+  );
+
+  const handleTourToggle = useCallback(() => {
+    setTourMode((prev) => {
+      if (prev) return false;
+      setCurrentIndex(0);
+      setSelectedStop(routeStops[0] ?? null);
+      return true;
+    });
+  }, [routeStops]);
+
+  const selectedIndex = selectedStop
+    ? routeStops.findIndex((s) => s.id === selectedStop.id)
+    : -1;
+
+  const selectedUnlocked = selectedIndex >= 0
+    ? isStopUnlocked(selectedIndex, routeStops, solvedIds, freeTour || !isRiddleTour)
+    : true;
+
+  const handleDetailNext = useCallback(() => {
+    if (selectedIndex < 0 || selectedIndex >= routeStops.length - 1) return;
+    const nextIndex = selectedIndex + 1;
+    setSelectedStop(routeStops[nextIndex] ?? null);
+    if (tourMode) setCurrentIndex(nextIndex);
+  }, [routeStops, selectedIndex, tourMode]);
+
+  const handleResetProgress = useCallback(() => {
+    resetProgress();
+    void clearPhotos();
+    setSelectedStop(null);
+    setCurrentIndex(0);
+    setTourMode(false);
+  }, [resetProgress, clearPhotos]);
+
+  return (
+    <section id="tour" className="border-y border-[color:var(--color-control-border)]">
+      <TourControls
+        tourType={tourType}
+        onTourTypeChange={handleTourTypeChange}
+        routeReversed={routeReversed}
+        onRouteReversedChange={handleRouteReversedChange}
+        currentStartName={currentStartName}
+        isRiddleTour={isRiddleTour}
+        freeTour={freeTour}
+        onFreeTourToggle={toggleFreeTour}
+        tourMode={tourMode}
+        onTourModeToggle={handleTourToggle}
+        visitedCount={stampedInRoute}
+        totalStops={routeStops.length}
+      />
+
+      <div className="grid grid-cols-1 lg:min-h-[640px] lg:grid-cols-12">
+        <div className="relative h-[42vh] min-h-[240px] sm:h-[48vh] sm:min-h-[280px] lg:col-span-7 lg:h-auto lg:min-h-[640px]">
+          {mapReady ? (
+            <Suspense fallback={<MapLoading />}>
+              <TourMap
+                routeStops={routeStops}
+                tourType={tourType}
+                activeStopId={activeStopId}
+                visited={stampedRecord}
+                onStopSelect={handleStopSelect}
+                flyToStop={flyToStop}
+                resetKey={resetKey}
+              />
+            </Suspense>
+          ) : (
+            <MapLoading />
+          )}
+        </div>
+
+        <div className="flex min-h-0 flex-col border-t border-[color:var(--color-control-border)] bg-[color:var(--color-paper)] lg:col-span-5 lg:border-l lg:border-t-0">
+          {geoEnabled && (
+            <NextStopNavigator
+              nextStop={nextUnsolvedStop}
+              position={position}
+              geoError={geoError}
+            />
+          )}
+
+          <div className="flex min-h-0 flex-1 flex-col">
+            {selectedStop ? (
+              <StopDetail
+                stop={selectedStop}
+                tourType={tourType}
+                solvedIds={solvedIds}
+                stampedIds={stampedIds}
+                isUnlocked={selectedUnlocked}
+                canMarkDone={!isRiddleTour || freeTour}
+                photoDataUrl={photos[selectedStop.id] ?? null}
+                photoBusy={busyStopId === selectedStop.id}
+                onAttachPhoto={attachPhoto}
+                onRemovePhoto={removePhoto}
+                currentIndex={selectedIndex >= 0 ? selectedIndex : 0}
+                totalStops={routeStops.length}
+                onSubmitAnswer={submitAnswer}
+                onToggleVisited={
+                  !isRiddleTour || freeTour ? toggleVisited : undefined
+                }
+                onNext={handleDetailNext}
+                canNext={
+                  selectedIndex >= 0 && selectedIndex < routeStops.length - 1
+                }
+                onClose={handleCloseDetail}
+              />
+            ) : (
+              <StopList
+                routeStops={routeStops}
+                activeStopId={activeStopId}
+                stampedIds={stampedIds}
+                solvedIds={solvedIds}
+                tourMode={tourMode}
+                tourType={tourType}
+                freeTour={freeTour}
+                currentIndex={currentIndex}
+                onStopClick={handleStopClick}
+                onToggleVisited={
+                  !isRiddleTour || freeTour ? toggleVisited : undefined
+                }
+              />
+            )}
+          </div>
+        </div>
+      </div>
+
+      <WorkspaceTabs
+        protocol={
+          <Laufzettel
+            tourType={tourType}
+            routeStops={routeStops}
+            solved={solved}
+            visited={visited}
+            photos={photos}
+            animatingId={animatingId}
+            completionAnimating={completionAnimating}
+            allFoodComplete={allFoodComplete}
+            onCompletionShown={triggerCompletionAnimation}
+            onShare={shareProgress}
+            onReset={handleResetProgress}
+            onNavigateToStop={handleNavigateToStop}
+          />
+        }
+        food={
+          <div className="flex flex-col gap-4">
+            <div className="file-card p-4 sm:p-5">
+              <HenriksSpeisekarte
+                foodChecked={foodChecked}
+                onToggleFood={toggleFood}
+                onNavigateToStop={handleNavigateToStop}
+              />
+            </div>
+            <GastroGuide />
+          </div>
+        }
+        notes={
+          <InvestigatorNotes
+            notes={notes}
+            onChange={setNotes}
+            onShare={shareProgress}
+          />
+        }
+      />
+    </section>
+  );
+}
