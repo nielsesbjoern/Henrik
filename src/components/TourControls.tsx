@@ -18,10 +18,7 @@ interface TourControlsProps {
   isRiddleTour: boolean;
   freeTour: boolean;
   onFreeTourToggle: () => void;
-  tourMode: boolean;
   onTourModeToggle: () => void;
-  visitedCount: number;
-  totalStops: number;
   hideTourTabs?: boolean;
 }
 
@@ -77,10 +74,7 @@ export function TourControls({
   isRiddleTour,
   freeTour,
   onFreeTourToggle,
-  tourMode,
   onTourModeToggle,
-  visitedCount,
-  totalStops,
   hideTourTabs = false,
 }: TourControlsProps) {
   const { t, format } = useI18n();
@@ -179,7 +173,7 @@ export function TourControls({
                   role="region"
                 >
                   {city.id === "cascais" && (
-                    <aside className="akte-vermerk font-mono" role="note">
+                    <aside className="akte-vermerk font-mono">
                       {t.cities.antiquaryNote}
                     </aside>
                   )}
@@ -218,7 +212,7 @@ export function TourControls({
                               role="tab"
                               aria-selected={tourId === tab.id}
                               onClick={() => onTourIdChange(tab.id)}
-                              className={`brand-label min-h-11 px-1.5 py-2 text-center tracking-[0.1em] transition sm:px-3 sm:text-left ${
+                              className={`akte-tour-tab brand-label min-h-11 min-w-0 px-1 py-2 text-center tracking-[0.06em] transition sm:px-3 sm:text-left sm:tracking-[0.1em] ${
                                 tourIndex > 0
                                   ? "border-l border-[color:var(--color-control-border)]"
                                   : ""
@@ -228,10 +222,10 @@ export function TourControls({
                                   : "text-[color:var(--color-ink)] hover:bg-[color:var(--color-card)]"
                               }`}
                             >
-                              <span className="block text-[10px] leading-tight sm:text-[11px]">
+                              <span className="akte-tour-tab__title">
                                 {copy.title}
                               </span>
-                              <span className="mt-0.5 block text-[9px] font-normal leading-tight tracking-[0.08em] opacity-80 sm:text-[10px]">
+                              <span className="akte-tour-tab__stops">
                                 {copy.stops}
                               </span>
                             </button>
@@ -261,7 +255,7 @@ export function TourControls({
                           <button
                             type="button"
                             onClick={() => freeTour && onFreeTourToggle()}
-                            className={`brand-label min-h-11 px-3 py-2 text-[11px] tracking-[0.1em] transition ${
+                            className={`brand-label min-h-11 min-w-0 px-2 py-2 text-[10px] tracking-[0.08em] transition sm:px-3 sm:text-[11px] sm:tracking-[0.1em] ${
                               !freeTour
                                 ? "bg-[color:var(--color-stamp)] text-[color:var(--color-paper)]"
                                 : "text-[color:var(--color-ink)] hover:bg-[color:var(--color-card)]"
@@ -272,7 +266,7 @@ export function TourControls({
                           <button
                             type="button"
                             onClick={() => !freeTour && onFreeTourToggle()}
-                            className={`brand-label min-h-11 border-l border-[color:var(--color-control-border)] px-3 py-2 text-[11px] tracking-[0.1em] transition ${
+                            className={`brand-label min-h-11 min-w-0 border-l border-[color:var(--color-control-border)] px-2 py-2 text-[10px] tracking-[0.08em] transition sm:px-3 sm:text-[11px] sm:tracking-[0.1em] ${
                               freeTour
                                 ? "bg-[color:var(--color-azulejo)] text-[color:var(--color-paper)]"
                                 : "text-[color:var(--color-ink)] hover:bg-[color:var(--color-card)]"
@@ -283,41 +277,17 @@ export function TourControls({
                         </div>
                       )}
                       <p className="brand-label text-[10px] tracking-[0.1em] text-[color:var(--color-pencil)]">
-                        {format(t.tourMode.visited, {
-                          visited: visitedCount,
-                          total: totalStops,
-                        })}
+                        {t.tourMode.overviewLead}
                       </p>
                     </div>
                     <button
                       type="button"
                       onClick={onTourModeToggle}
-                      className={`brand-label min-h-11 border px-4 py-2.5 text-[11px] tracking-[0.12em] transition ${
-                        tourMode
-                          ? "border-[color:var(--color-stamp)] bg-[color:var(--color-stamp)] text-[color:var(--color-paper)]"
-                          : "btn-stamp hover:opacity-90"
-                      }`}
+                      className="brand-label min-h-11 border btn-stamp px-4 py-2.5 text-[11px] tracking-[0.12em] transition hover:opacity-90"
                     >
-                      {tourMode ? t.tourMode.endTour : t.tourMode.startTour}
+                      {t.tourMode.startTour}
                     </button>
                   </div>
-
-                  {tourMode && (
-                    <div
-                      className="h-1 overflow-hidden bg-[color:var(--color-card)]"
-                      role="progressbar"
-                      aria-valuenow={visitedCount}
-                      aria-valuemin={0}
-                      aria-valuemax={totalStops}
-                    >
-                      <div
-                        className="h-full bg-[color:var(--color-azulejo)] transition-all duration-500"
-                        style={{
-                          width: `${totalStops > 0 ? (visitedCount / totalStops) * 100 : 0}%`,
-                        }}
-                      />
-                    </div>
-                  )}
                 </div>
               )}
             </section>

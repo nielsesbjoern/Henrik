@@ -136,7 +136,7 @@ export function GastroGuide({ cityId, alwaysOpen = false }: GastroGuideProps) {
                 type="button"
                 onClick={() => setFilter(f)}
                 aria-pressed={filter === f}
-                className={`meta-mono px-2.5 py-1.5 text-[11px] transition ${
+                className={`meta-mono inline-flex min-h-11 items-center px-2.5 py-1.5 text-[11px] transition ${
                   filter === f
                     ? "border border-[color:var(--color-stamp)] bg-[color:var(--color-stamp)] text-[color:var(--color-paper)]"
                     : "border border-[color:var(--color-control-border)] text-[color:var(--color-ink)] hover:bg-[color:var(--color-card)]"

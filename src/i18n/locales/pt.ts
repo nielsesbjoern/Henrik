@@ -121,6 +121,7 @@ export const pt: Translations = {
     geoDenied: "Acesso à localização negado.",
     geoFailed: "Não foi possível determinar a localização.",
     fullTourGoogleMaps: "Passeio no Google Maps",
+    legComplete: "Passeio completo (todas as {count} paragens)",
     legPart: "Etapa {index} (paragens {from}–{to})",
     scrollZoomHint: "Clique no mapa e use a roda para ampliar",
     fitRoute: "Centrar o percurso",
@@ -144,6 +145,8 @@ export const pt: Translations = {
     startTour: "Iniciar passeio",
     back: "Anterior",
     next: "Seguinte",
+    activeEyebrow: "Em rota",
+    overviewLead: "Escolha a cidade e a rota, veja o mapa por alto — depois inicie o passeio.",
   },
   routeToggle: {
     label: "ESCOLHA DE ROTA",
@@ -259,6 +262,9 @@ export const pt: Translations = {
     showQuote: "Citação do livro",
     fictionalPlaceNote:
       "LOCAL FICTÍCIO — posição conforme o mapa do romance, sem morada real",
+    photoAlt: "Local: {name}",
+    photoCredit: "Foto: {credit} · {license}",
+    photoAtmosphere: "Envolvente",
   },
   categories: {
     buchszene: "Cena real do livro",

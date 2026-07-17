@@ -153,6 +153,8 @@ export interface Translations {
     geoDenied: string;
     geoFailed: string;
     fullTourGoogleMaps: string;
+    /** Complete tour option when stages are also listed. */
+    legComplete: string;
     legPart: string;
     scrollZoomHint: string;
     fitRoute: string;
@@ -176,6 +178,8 @@ export interface Translations {
     startTour: string;
     back: string;
     next: string;
+    activeEyebrow: string;
+    overviewLead: string;
   };
   routeToggle: {
     label: string;
@@ -261,6 +265,9 @@ export interface Translations {
     empty: string;
     showQuote: string;
     fictionalPlaceNote: string;
+    photoAlt: string;
+    photoCredit: string;
+    photoAtmosphere: string;
   };
   categories: Record<Category, string>;
   stops: Record<number, StopTranslation>;

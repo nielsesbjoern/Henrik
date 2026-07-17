@@ -1,11 +1,19 @@
+import { lazy, Suspense, useCallback, useState } from "react";
 import { Hero } from "./components/Hero";
 import { Footer } from "./components/Footer";
-import { FadoPlayer } from "./components/FadoPlayer";
 import { MapSection } from "./MapSection";
 import { useTourState } from "./hooks/useTourState";
 
+const FadoPlayer = lazy(() =>
+  import("./components/FadoPlayer").then((m) => ({ default: m.FadoPlayer })),
+);
+
 function App() {
   const tourState = useTourState();
+  const [tourActive, setTourActive] = useState(false);
+  const handleTourModeChange = useCallback((active: boolean) => {
+    setTourActive(active);
+  }, []);
 
   return (
     <div className="app-shell min-h-screen bg-[color:var(--color-paper)]">
@@ -13,11 +21,20 @@ function App() {
       <div className="paper-stain paper-stain--2" aria-hidden />
       <div className="paper-stain paper-stain--3" aria-hidden />
       <div className="app-shell__content">
-        <Hero cityId={tourState.cityId} activeTour={tourState.activeTour} />
-        <MapSection tourState={tourState} />
+        {!tourActive && (
+          <Hero cityId={tourState.cityId} activeTour={tourState.activeTour} />
+        )}
+        <main id="main">
+          <MapSection
+            tourState={tourState}
+            onTourModeChange={handleTourModeChange}
+          />
+        </main>
         <Footer />
       </div>
-      <FadoPlayer />
+      <Suspense fallback={null}>
+        <FadoPlayer />
+      </Suspense>
     </div>
   );
 }

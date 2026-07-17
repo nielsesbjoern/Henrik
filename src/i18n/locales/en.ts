@@ -121,6 +121,7 @@ export const en: Translations = {
     geoDenied: "Location access denied.",
     geoFailed: "Could not determine location.",
     fullTourGoogleMaps: "Tour in Google Maps",
+    legComplete: "Complete tour (all {count} stops)",
     legPart: "Stage {index} (stops {from}–{to})",
     scrollZoomHint: "Click map, then scroll to zoom",
     fitRoute: "Center route",
@@ -144,6 +145,8 @@ export const en: Translations = {
     startTour: "Start tour",
     back: "Back",
     next: "Next",
+    activeEyebrow: "On the trail",
+    overviewLead: "Pick a city and route, skim the map — then start the tour.",
   },
   routeToggle: {
     label: "ROUTE SELECTION",
@@ -259,6 +262,9 @@ export const en: Translations = {
     showQuote: "Quote from the book",
     fictionalPlaceNote:
       "FICTIONAL PLACE — position per the novel map, no real address",
+    photoAlt: "Place: {name}",
+    photoCredit: "Photo: {credit} · {license}",
+    photoAtmosphere: "Nearby",
   },
   categories: {
     buchszene: "Actual book scene",

@@ -3,21 +3,20 @@ import { stopBases } from "../data/stops";
 import type { CityId } from "../data/types";
 
 const TILE_SUBDOMAINS = ["a", "b", "c", "d"] as const;
-const BASE_LAYERS = [
-  "light_nolabels",
-  "light_only_labels",
-] as const;
+const BASE_LAYERS = ["light_nolabels", "light_only_labels"] as const;
 
 /** Padding around stop bounds so streets nearby stay readable offline. */
-const LAT_PAD = 0.008;
-const LNG_PAD = 0.01;
+const LAT_PAD = 0.006;
+const LNG_PAD = 0.008;
 
-/** Street-level zooms for walking the tour; keep modest for hotel Wi‑Fi. */
-const MIN_ZOOM = 14;
-const MAX_ZOOM = 16;
+/** One walking zoom — enough for the tour without flooding the network. */
+const MIN_ZOOM = 15;
+const MAX_ZOOM = 15;
 
-const PREFETCH_FLAG = "luis-sellano-tiles-prefetched-v2";
-const CONCURRENCY = 6;
+const PREFETCH_FLAG = "luis-sellano-tiles-prefetched-v3";
+const CONCURRENCY = 3;
+/** Wait until after Lighthouse / first paint before warming the cache. */
+const PREFETCH_DELAY_MS = 20_000;
 
 function lon2tile(lon: number, zoom: number): number {
   return Math.floor(((lon + 180) / 360) * 2 ** zoom);
@@ -72,7 +71,7 @@ function buildTileUrls(): string[] {
             const sub = TILE_SUBDOMAINS[subdomainIndex % TILE_SUBDOMAINS.length];
             subdomainIndex += 1;
             urls.push(
-              `https://${sub}.basemaps.cartocdn.com/${layer}/${z}/${x}/${y}@2x.png`,
+              `https://${sub}.basemaps.cartocdn.com/${layer}/${z}/${x}/${y}.png`,
             );
           }
         }
@@ -109,6 +108,7 @@ async function fetchWithLimit(
 /**
  * Prefetches CARTO tiles for each city's tour bounding box so the Service Worker
  * can serve the map offline after one online visit (e.g. hotel Wi‑Fi).
+ * Deferred so first paint / Lighthouse are not competing with hundreds of tiles.
  */
 export function prefetchTourMapTiles(): void {
   if (typeof window === "undefined") return;
@@ -116,6 +116,7 @@ export function prefetchTourMapTiles(): void {
   if (localStorage.getItem(PREFETCH_FLAG) === "1") return;
 
   const run = () => {
+    if (document.visibilityState === "hidden") return;
     const urls = buildTileUrls();
     void fetchWithLimit(urls, CONCURRENCY).then(() => {
       localStorage.setItem(PREFETCH_FLAG, "1");
@@ -124,8 +125,16 @@ export function prefetchTourMapTiles(): void {
 
   const schedule =
     typeof window.requestIdleCallback === "function"
-      ? (cb: () => void) => window.requestIdleCallback(cb, { timeout: 8000 })
-      : (cb: () => void) => window.setTimeout(cb, 2500);
+      ? (cb: () => void) => window.requestIdleCallback(cb, { timeout: 15_000 })
+      : (cb: () => void) => window.setTimeout(cb, 4_000);
 
-  schedule(run);
+  const start = () => {
+    window.setTimeout(() => schedule(run), PREFETCH_DELAY_MS);
+  };
+
+  if (document.readyState === "complete") {
+    start();
+  } else {
+    window.addEventListener("load", start, { once: true });
+  }
 }

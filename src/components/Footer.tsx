@@ -53,7 +53,7 @@ export function Footer() {
                 event.preventDefault();
                 openLegal("impressum");
               }}
-              className="font-mono text-[11px] tracking-normal text-[color:var(--color-azulejo)] underline decoration-dotted underline-offset-4 transition hover:text-[color:var(--color-ink)]"
+              className="inline-flex min-h-11 items-center font-mono text-[11px] tracking-normal text-[color:var(--color-azulejo)] underline decoration-dotted underline-offset-4 transition hover:text-[color:var(--color-ink)]"
             >
               {t.legal.impressumLink}
             </a>
@@ -63,7 +63,7 @@ export function Footer() {
                 event.preventDefault();
                 openLegal("datenschutz");
               }}
-              className="font-mono text-[11px] tracking-normal text-[color:var(--color-azulejo)] underline decoration-dotted underline-offset-4 transition hover:text-[color:var(--color-ink)]"
+              className="inline-flex min-h-11 items-center font-mono text-[11px] tracking-normal text-[color:var(--color-azulejo)] underline decoration-dotted underline-offset-4 transition hover:text-[color:var(--color-ink)]"
             >
               {t.legal.privacyLink}
             </a>
@@ -73,7 +73,7 @@ export function Footer() {
                 event.preventDefault();
                 openLegal("haftung");
               }}
-              className="font-mono text-[11px] tracking-normal text-[color:var(--color-azulejo)] underline decoration-dotted underline-offset-4 transition hover:text-[color:var(--color-ink)]"
+              className="inline-flex min-h-11 items-center font-mono text-[11px] tracking-normal text-[color:var(--color-azulejo)] underline decoration-dotted underline-offset-4 transition hover:text-[color:var(--color-ink)]"
             >
               {t.legal.liabilityLink}
             </a>

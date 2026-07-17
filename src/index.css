@@ -265,7 +265,7 @@ html[data-mood="dusk"] {
   font-weight: 700;
   font-size: 18px;
   line-height: 1;
-  transition: transform 0.12s ease-out, box-shadow 0.12s ease-out;
+  transition: transform 0.12s ease-out;
 }
 
 .stop-marker--list {
@@ -503,6 +503,38 @@ html[data-mood="dusk"] {
   gap: 0.75rem;
 }
 
+.akte-tour-tab__title {
+  display: block;
+  font-size: 9px;
+  line-height: 1.15;
+  white-space: normal;
+  overflow-wrap: break-word;
+  word-break: normal;
+  hyphens: manual;
+}
+
+.akte-tour-tab__stops {
+  display: block;
+  margin-top: 0.2rem;
+  font-size: 8px;
+  font-weight: 400;
+  line-height: 1.2;
+  letter-spacing: 0.06em;
+  opacity: 0.8;
+}
+
+@media (min-width: 640px) {
+  .akte-tour-tab__title {
+    font-size: 11px;
+    line-height: 1.2;
+  }
+
+  .akte-tour-tab__stops {
+    font-size: 10px;
+    letter-spacing: 0.08em;
+  }
+}
+
 .akte-dossier__status {
   display: flex;
   flex-wrap: wrap;
@@ -570,32 +602,41 @@ html[data-mood="dusk"] {
 }
 
 .user-marker {
+  position: relative;
   width: 16px;
   height: 16px;
   background: #1f5fa8;
   border: 3px solid var(--color-paper);
   border-radius: 50%;
-  box-shadow: 0 0 0 6px rgba(31, 95, 168, 0.25);
 }
 
 .user-marker-pulse {
+  position: relative;
   width: 16px;
   height: 16px;
   background: #1f5fa8;
   border: 3px solid var(--color-paper);
   border-radius: 50%;
+}
+
+.user-marker-pulse::after {
+  content: "";
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  border: 2px solid rgba(31, 95, 168, 0.45);
   animation: pulse-ring 2s ease-out infinite;
+  pointer-events: none;
 }
 
 @keyframes pulse-ring {
   0% {
-    box-shadow: 0 0 0 0 rgba(31, 95, 168, 0.5);
-  }
-  70% {
-    box-shadow: 0 0 0 12px rgba(31, 95, 168, 0);
+    transform: scale(1);
+    opacity: 0.55;
   }
   100% {
-    box-shadow: 0 0 0 0 rgba(31, 95, 168, 0);
+    transform: scale(2.4);
+    opacity: 0;
   }
 }
 
@@ -734,6 +775,55 @@ html[data-mood="dusk"] {
   font-family: var(--font-mono);
   font-size: 11px;
   letter-spacing: 0.04em;
+}
+
+.stop-place-photo {
+  margin-top: 1.25rem;
+}
+
+.stop-place-photo__frame {
+  overflow: hidden;
+  border: 1px solid var(--color-control-border);
+  background: var(--color-card);
+  aspect-ratio: 4 / 3;
+}
+
+.stop-place-photo__img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Dossier archive look — full black & white */
+  filter: grayscale(1) contrast(1.1) brightness(1.02);
+}
+
+.stop-place-photo__caption {
+  margin-top: 0.45rem;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  line-height: 1.35;
+  color: var(--color-pencil);
+}
+
+.stop-place-photo__atmosphere {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.stop-place-photo__credit {
+  color: var(--color-azulejo);
+  text-decoration: none;
+  transition: opacity 0.15s ease;
+}
+
+.stop-place-photo__credit:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+
+html[data-mood="dusk"] .stop-place-photo__img {
+  filter: grayscale(1) contrast(1.14) brightness(0.9);
 }
 
 .laufzettel-grid {
@@ -1411,6 +1501,7 @@ html[data-mood="dusk"] {
 
 @media (prefers-reduced-motion: reduce) {
   .stop-marker,
+  .user-marker-pulse::after,
   .stop-marker--pulse::after,
   .sheet-enter,
   .file-card,
@@ -1639,7 +1730,7 @@ html[data-mood="dusk"] {
 .fado-player__toggle {
   display: flex;
   width: 100%;
-  min-height: 2.5rem;
+  min-height: 2.75rem;
   align-items: center;
   justify-content: space-between;
   gap: 0.75rem;
@@ -1764,7 +1855,7 @@ html[data-mood="dusk"] {
   font-weight: 200;
   letter-spacing: 0.28em;
   color: var(--hero-ink);
-  animation: hero-rise 700ms ease both;
+  animation: hero-rise 600ms ease both;
 }
 
 .page-hero__series {
@@ -1773,7 +1864,7 @@ html[data-mood="dusk"] {
   font-weight: 500;
   letter-spacing: 0.28em;
   color: var(--hero-muted);
-  animation: hero-rise 700ms ease 80ms both;
+  animation: hero-rise 600ms ease 60ms both;
 }
 
 .page-hero__title {
@@ -1785,7 +1876,7 @@ html[data-mood="dusk"] {
   line-height: 1.02;
   color: var(--hero-title);
   text-shadow: 0 0 40px color-mix(in srgb, var(--hero-title) 28%, transparent);
-  animation: hero-rise 700ms ease 140ms both;
+  /* No opacity fade — LCP element must paint immediately */
 }
 
 .page-hero__meta {
@@ -1794,7 +1885,7 @@ html[data-mood="dusk"] {
   letter-spacing: 0.16em;
   color: var(--hero-muted);
   opacity: 0.85;
-  animation: hero-rise 700ms ease 200ms both;
+  animation: hero-rise 600ms ease 100ms both;
 }
 
 .page-hero__text {
@@ -1805,7 +1896,7 @@ html[data-mood="dusk"] {
   font-weight: 400;
   line-height: 1.65;
   color: color-mix(in srgb, var(--hero-ink) 72%, transparent);
-  animation: hero-rise 700ms ease 260ms both;
+  animation: hero-rise 600ms ease 140ms both;
 }
 
 .page-hero__cta {
@@ -1820,7 +1911,7 @@ html[data-mood="dusk"] {
   letter-spacing: 0.14em;
   color: #0a1216;
   transition: opacity 150ms ease, transform 150ms ease;
-  animation: hero-rise 700ms ease 320ms both;
+  animation: hero-rise 600ms ease 180ms both;
 }
 
 .page-hero__cta:hover {
@@ -1830,11 +1921,9 @@ html[data-mood="dusk"] {
 
 @keyframes hero-rise {
   from {
-    opacity: 0;
-    transform: translateY(0.6rem);
+    transform: translateY(0.45rem);
   }
   to {
-    opacity: 1;
     transform: translateY(0);
   }
 }

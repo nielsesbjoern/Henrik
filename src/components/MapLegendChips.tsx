@@ -19,7 +19,7 @@ export function MapLegendChips({ cityId }: MapLegendChipsProps) {
 
   return (
     <details className="map-legend-overlay group absolute bottom-16 left-3 z-[1000] max-w-[min(calc(100%-1.5rem),18rem)] sm:bottom-4">
-      <summary className="map-pill-button meta-mono flex cursor-pointer list-none items-center gap-2 px-3 py-2 text-[10px] text-ink">
+      <summary className="map-pill-button meta-mono flex min-h-11 cursor-pointer list-none items-center gap-2 px-3 py-2 text-[10px] text-ink">
         <span className="flex gap-0.5" aria-hidden>
           {categories.map((cat) => (
             <span

@@ -23,7 +23,7 @@ export function MoodToggle() {
           key={code}
           type="button"
           onClick={() => setMood(code)}
-          className={`brand-label px-3 py-2 text-[10px] tracking-[0.12em] transition sm:text-[11px] ${
+          className={`brand-label inline-flex min-h-11 items-center px-3 py-2 text-[10px] tracking-[0.12em] transition sm:text-[11px] ${
             mood === code
               ? "bg-[color:var(--color-azulejo)] text-[color:var(--color-paper)]"
               : "text-[color:var(--color-pencil)] hover:bg-[color:var(--color-card)] hover:text-ink"

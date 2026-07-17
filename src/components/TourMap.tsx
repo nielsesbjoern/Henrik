@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
+import "leaflet/dist/leaflet.css";
 import {
   MapContainer,
   Marker,
@@ -74,6 +75,9 @@ export default function TourMap({
     () =>
       buildTourDirectionLegs(routeStops, {
         single: t.map.fullTourGoogleMaps,
+        complete: format(t.map.legComplete, {
+          count: String(routeStops.length),
+        }),
         part: (index, from, to) =>
           format(t.map.legPart, {
             index: String(index),
@@ -81,7 +85,13 @@ export default function TourMap({
             to: String(to),
           }),
       }),
-    [routeStops, t.map.fullTourGoogleMaps, t.map.legPart, format],
+    [
+      routeStops,
+      t.map.fullTourGoogleMaps,
+      t.map.legComplete,
+      t.map.legPart,
+      format,
+    ],
   );
 
   const handleLocate = useCallback(() => {
@@ -223,20 +233,24 @@ export default function TourMap({
       <div className="absolute bottom-3 left-1/2 z-[1000] w-[min(calc(100%-7.5rem),18rem)] -translate-x-1/2 sm:bottom-4 sm:w-[min(calc(100%-2rem),22rem)]">
         {directionLegs.length > 1 ? (
           <details className="group relative">
-            <summary className="map-pill-button meta-mono mx-auto flex min-h-10 cursor-pointer list-none items-center justify-center gap-2 px-3 py-2 text-[11px] text-ink sm:px-4 sm:text-xs">
+            <summary className="map-pill-button meta-mono mx-auto flex min-h-11 cursor-pointer list-none items-center justify-center gap-2 px-3 py-2 text-[11px] text-ink sm:px-4 sm:text-xs">
               <svg className="h-4 w-4 shrink-0 text-azulejo" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 01.553-.894L9 2m0 18l6-3m-6 3V2m6 15l5.447 2.724A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 2" />
               </svg>
               <span className="truncate">{t.map.fullTourGoogleMaps}</span>
             </summary>
-            <div className="absolute bottom-full left-1/2 mb-3 flex w-full min-w-[14rem] -translate-x-1/2 flex-col gap-2 border border-[color:var(--color-control-border)] bg-[color:var(--color-paper)] p-2">
-              {directionLegs.map((leg) => (
+            <div className="absolute bottom-full left-1/2 mb-3 flex w-full min-w-[16rem] -translate-x-1/2 flex-col gap-2 border border-[color:var(--color-control-border)] bg-[color:var(--color-paper)] p-2">
+              {directionLegs.map((leg, index) => (
                 <a
                   key={leg.label}
                   href={leg.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="btn-stamp meta-mono border px-3 py-2.5 text-center text-xs transition"
+                  className={
+                    index === 0
+                      ? "btn-stamp meta-mono border px-3 py-2.5 text-center text-xs transition"
+                      : "meta-mono border border-[color:var(--color-control-border)] px-3 py-2.5 text-center text-xs text-ink transition hover:bg-[color:var(--color-card)]"
+                  }
                 >
                   {leg.label}
                 </a>
@@ -248,7 +262,7 @@ export default function TourMap({
             href={directionLegs[0].url}
             target="_blank"
             rel="noopener noreferrer"
-            className="map-pill-button meta-mono mx-auto flex min-h-10 items-center justify-center gap-2 px-3 py-2 text-center text-[11px] text-ink transition sm:px-4 sm:text-xs"
+            className="map-pill-button meta-mono mx-auto flex min-h-11 items-center justify-center gap-2 px-3 py-2 text-center text-[11px] text-ink transition sm:px-4 sm:text-xs"
           >
             <svg className="h-4 w-4 shrink-0 text-azulejo" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.8} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 01.553-.894L9 2m0 18l6-3m-6 3V2m6 15l5.447 2.724A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 2" />

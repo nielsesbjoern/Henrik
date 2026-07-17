@@ -21,7 +21,7 @@ export function PlayModeToggle({ freeTour, onToggle }: PlayModeToggleProps) {
         <button
           type="button"
           onClick={() => freeTour && onToggle()}
-          className={`meta-mono px-3 py-2 text-xs transition ${
+          className={`meta-mono min-h-11 px-3 py-2 text-xs transition ${
             !freeTour
               ? "bg-[color:var(--color-stamp)] text-[color:var(--color-paper)]"
               : "text-[color:var(--color-ink)] hover:bg-[color:var(--color-card)]"
@@ -32,7 +32,7 @@ export function PlayModeToggle({ freeTour, onToggle }: PlayModeToggleProps) {
         <button
           type="button"
           onClick={() => !freeTour && onToggle()}
-          className={`meta-mono border-l border-[color:var(--color-control-border)] px-3 py-2 text-xs transition ${
+          className={`meta-mono min-h-11 border-l border-[color:var(--color-control-border)] px-3 py-2 text-xs transition ${
             freeTour
               ? "bg-[color:var(--color-azulejo)] text-[color:var(--color-paper)]"
               : "text-[color:var(--color-ink)] hover:bg-[color:var(--color-card)]"

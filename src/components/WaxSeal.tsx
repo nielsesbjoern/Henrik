@@ -6,11 +6,7 @@ interface WaxSealProps {
 
 export function WaxSeal({ animate = false, label, subtitle }: WaxSealProps) {
   return (
-    <div
-      className={`wax-seal ${animate ? "wax-seal--press" : ""}`}
-      role="img"
-      aria-label={subtitle ? `${label}. ${subtitle}` : label}
-    >
+    <div className={`wax-seal ${animate ? "wax-seal--press" : ""}`}>
       <div className="wax-seal__blob" aria-hidden>
         <span className="wax-seal__gloss" />
         <span className="wax-seal__rim" />

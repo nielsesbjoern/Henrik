@@ -14,7 +14,7 @@ export function LanguageSwitcher() {
           key={code}
           type="button"
           onClick={() => setLocale(code)}
-          className={`brand-label px-3 py-2 text-[10px] tracking-[0.16em] transition sm:text-[11px] ${
+          className={`brand-label inline-flex min-h-11 items-center px-3 py-2 text-[10px] tracking-[0.16em] transition sm:text-[11px] ${
             locale === code
               ? "bg-[color:var(--color-azulejo)] text-[color:var(--color-paper)]"
               : "text-[color:var(--color-pencil)] hover:bg-[color:var(--color-card)] hover:text-ink"

@@ -91,18 +91,17 @@ export function WorkspaceTabs({
             <button
               type="button"
               onClick={() => openTo("protocol")}
-              className="btn-stamp brand-label shrink-0 px-4 py-2.5 text-[11px] tracking-[0.12em]"
+              className="btn-stamp brand-label min-h-11 shrink-0 px-4 py-2.5 text-[11px] tracking-[0.12em]"
             >
               {t.workspace.expand}
             </button>
           </div>
 
-          <div className="workspace-teaser__grid" role="list">
+          <div className="workspace-teaser__grid">
             {tabs.map((tab) => (
               <button
                 key={tab.id}
                 type="button"
-                role="listitem"
                 onClick={() => openTo(tab.id)}
                 className="workspace-teaser__card"
               >

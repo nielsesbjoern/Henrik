@@ -49,7 +49,7 @@ export default defineConfig({
         ],
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2,woff}'],
+        globPatterns: ['**/*.{js,css,html,svg,png,ico,woff2}'],
         navigateFallback: '/index.html',
         runtimeCaching: [
           {
@@ -58,22 +58,8 @@ export default defineConfig({
             options: {
               cacheName: 'map-tiles',
               expiration: {
-                maxEntries: 800,
+                maxEntries: 400,
                 maxAgeSeconds: 60 * 60 * 24 * 30,
-              },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
-            },
-          },
-          {
-            urlPattern: /^https:\/\/fonts\.(googleapis|gstatic)\.com\/.*/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'google-fonts',
-              expiration: {
-                maxEntries: 20,
-                maxAgeSeconds: 60 * 60 * 24 * 365,
               },
               cacheableResponse: {
                 statuses: [0, 200],
@@ -87,4 +73,12 @@ export default defineConfig({
       },
     }),
   ],
+  build: {
+    target: 'es2022',
+    cssCodeSplit: true,
+    modulePreload: {
+      resolveDependencies: (_filename, deps) =>
+        deps.filter((dep) => !dep.includes('TourMap') && !dep.includes('leaflet')),
+    },
+  },
 })

@@ -1,20 +1,26 @@
 import type { Stop } from "../data/stops";
 
 /**
- * Google Maps Directions URL (`maps/dir/?api=1`) allows origin + destination
- * plus at most 10 waypoints — i.e. 12 stops total per link.
+ * Soft cap for a single path-style Maps URL (under the 2 048-character limit).
+ * Used for the “complete tour” option.
  */
-export const GOOGLE_MAPS_MAX_STOPS = 12;
+export const GOOGLE_MAPS_MAX_STOPS = 25;
+
+/**
+ * Google Maps product UI reliably shows about 10 destinations per route.
+ * Longer tours also get stage links sized to this limit.
+ */
+export const GOOGLE_MAPS_RELIABLE_STOPS = 10;
 
 export interface TourLeg {
   label: string;
   url: string;
 }
 
-/** Split a route into chunks that each fit Google Maps' waypoint limit. */
+/** Split a route into chunks that each fit a single Google Maps directions URL. */
 export function chunkStopsForDirections(
   stops: Stop[],
-  maxStops = GOOGLE_MAPS_MAX_STOPS,
+  maxStops = GOOGLE_MAPS_RELIABLE_STOPS,
 ): Stop[][] {
   if (stops.length === 0) return [];
   if (maxStops < 2) return stops.map((s) => [s]);
@@ -42,29 +48,39 @@ export function buildTourDirectionLegs(
   ordered: Stop[],
   labels: {
     single: string;
+    /** Offered first when the tour needs multiple reliable stages. */
+    complete: string;
     part: (index: number, from: number, to: number) => string;
   },
 ): TourLeg[] {
-  const chunks = chunkStopsForDirections(ordered);
-  if (chunks.length === 0) return [];
+  if (ordered.length === 0) return [];
+
+  const completeUrl = buildWalkingDirectionsUrl(ordered);
+  const chunks = chunkStopsForDirections(ordered, GOOGLE_MAPS_RELIABLE_STOPS);
 
   if (chunks.length === 1) {
     return [
       {
         label: labels.single,
-        url: buildWalkingDirectionsUrl(chunks[0]),
+        url: completeUrl,
       },
     ];
   }
 
-  return chunks.map((chunk, index) => {
-    const from = indexInTour(ordered, chunk[0]) + 1;
-    const to = indexInTour(ordered, chunk[chunk.length - 1]) + 1;
-    return {
-      label: labels.part(index + 1, from, to),
-      url: buildWalkingDirectionsUrl(chunk),
-    };
-  });
+  return [
+    {
+      label: labels.complete,
+      url: completeUrl,
+    },
+    ...chunks.map((chunk, index) => {
+      const from = indexInTour(ordered, chunk[0]) + 1;
+      const to = indexInTour(ordered, chunk[chunk.length - 1]) + 1;
+      return {
+        label: labels.part(index + 1, from, to),
+        url: buildWalkingDirectionsUrl(chunk),
+      };
+    }),
+  ];
 }
 
 function indexInTour(ordered: Stop[], stop: Stop): number {
@@ -81,6 +97,7 @@ export function buildFullTourLegs(
 ): TourLeg[] {
   return buildTourDirectionLegs(ordered, {
     single: labels.all,
+    complete: labels.all,
     part: (index) =>
       index === 1 ? labels.leg1 : index === 2 ? labels.leg2 : labels.leg1,
   });
@@ -94,6 +111,12 @@ export function googleMapsDirectionsUrl(lat: number, lng: number): string {
   return `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}&travelmode=walking`;
 }
 
+/**
+ * Walking directions with every stop as a real destination.
+ *
+ * Uses the path form (`/maps/dir/a/b/c/...`) instead of `api=1&waypoints=…`.
+ * The waypoints parameter silently drops stops above 9 intermediates.
+ */
 export function buildWalkingDirectionsUrl(routeStops: Stop[]): string {
   if (routeStops.length === 0) return "";
   if (routeStops.length > GOOGLE_MAPS_MAX_STOPS) {
@@ -108,20 +131,7 @@ export function buildWalkingDirectionsUrl(routeStops: Stop[]): string {
     return googleMapsDirectionsUrl(routeStops[0].lat, routeStops[0].lng);
   }
 
-  const origin = `${routeStops[0].lat},${routeStops[0].lng}`;
-  const destination = `${routeStops[routeStops.length - 1].lat},${routeStops[routeStops.length - 1].lng}`;
-  const waypoints = routeStops
-    .slice(1, -1)
-    .map((s) => `${s.lat},${s.lng}`)
-    .join("|");
-
-  const params = new URLSearchParams({
-    api: "1",
-    origin,
-    destination,
-    travelmode: "walking",
-  });
-  if (waypoints) params.set("waypoints", waypoints);
-
-  return `https://www.google.com/maps/dir/?${params.toString()}`;
+  // data=!4m2!4m1!3e2 → travel mode walking (3e2)
+  const path = routeStops.map((s) => `${s.lat},${s.lng}`).join("/");
+  return `https://www.google.com/maps/dir/${path}/data=!4m2!4m1!3e2`;
 }

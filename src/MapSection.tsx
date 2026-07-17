@@ -9,6 +9,7 @@ import {
 } from "react";
 import { getRouteStops, tourIdToType, type TourType } from "./utils/route";
 import { TourControls } from "./components/TourControls";
+import { ActiveTourBar } from "./components/ActiveTourBar";
 import { WorkspaceTabs } from "./components/WorkspaceTabs";
 import { NextStopNavigator } from "./components/NextStopNavigator";
 import { StopList } from "./components/StopList";
@@ -42,10 +43,11 @@ function mergeStampedRecord(solved: VisitedRecord, visited: VisitedRecord): Visi
 
 interface MapSectionProps {
   tourState: TourState;
+  onTourModeChange?: (active: boolean) => void;
 }
 
-export function MapSection({ tourState }: MapSectionProps) {
-  const { t, stops } = useI18n();
+export function MapSection({ tourState, onTourModeChange }: MapSectionProps) {
+  const { t, format, stops } = useI18n();
   const [routeReversed, setRouteReversed] = useState(false);
   const [selectedStop, setSelectedStop] = useState<RouteStop | null>(null);
   const [tourMode, setTourMode] = useState(false);
@@ -122,11 +124,15 @@ export function MapSection({ tourState }: MapSectionProps) {
     routeStops.length > 0 && stampedInRoute === routeStops.length;
 
   useEffect(() => {
+    onTourModeChange?.(tourMode);
+  }, [tourMode, onTourModeChange]);
+
+  useEffect(() => {
     wasRouteCompleteRef.current = false;
   }, [tourId, routeReversed]);
 
   useEffect(() => {
-    if (isRouteComplete && !wasRouteCompleteRef.current) {
+    if (isRouteComplete && tourMode && !wasRouteCompleteRef.current) {
       wasRouteCompleteRef.current = true;
       setSelectedStop(null);
       setProtocolRevealSignal((n) => n + 1);
@@ -134,7 +140,7 @@ export function MapSection({ tourState }: MapSectionProps) {
     if (!isRouteComplete) {
       wasRouteCompleteRef.current = false;
     }
-  }, [isRouteComplete]);
+  }, [isRouteComplete, tourMode]);
 
   const activeStopId = tourMode
     ? routeStops[currentIndex]?.id ?? null
@@ -147,8 +153,33 @@ export function MapSection({ tourState }: MapSectionProps) {
   }, [selectedStop, tourMode, routeStops, currentIndex]);
 
   useEffect(() => {
-    const timer = requestAnimationFrame(() => setMapReady(true));
-    return () => cancelAnimationFrame(timer);
+    const target = document.getElementById("tour");
+    if (!target || typeof IntersectionObserver === "undefined") {
+      const timer = window.setTimeout(() => setMapReady(true), 100);
+      return () => window.clearTimeout(timer);
+    }
+
+    let fallbackId = 0;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) {
+          setMapReady(true);
+          observer.disconnect();
+          window.clearTimeout(fallbackId);
+        }
+      },
+      { rootMargin: "120px 0px" },
+    );
+    observer.observe(target);
+    fallbackId = window.setTimeout(() => {
+      setMapReady(true);
+      observer.disconnect();
+    }, 2_500);
+
+    return () => {
+      observer.disconnect();
+      window.clearTimeout(fallbackId);
+    };
   }, []);
 
   useEffect(() => {
@@ -165,7 +196,12 @@ export function MapSection({ tourState }: MapSectionProps) {
     if (!stop) return;
     pendingStopIdRef.current = null;
     setSelectedStop(stop);
-  }, [routeStops, cityId]);
+    if (!tourMode) {
+      setTourMode(true);
+      const idx = routeStops.findIndex((s) => s.id === stop.id);
+      if (idx >= 0) setCurrentIndex(idx);
+    }
+  }, [routeStops, cityId, tourMode]);
 
   useEffect(() => {
     setSelectedStop(null);
@@ -204,6 +240,7 @@ export function MapSection({ tourState }: MapSectionProps) {
       const idx = routeStops.findIndex((s) => s.id === stop.id);
       if (idx >= 0) setCurrentIndex(idx);
     }
+    if (!tourMode) return;
     requestAnimationFrame(() => {
       document.getElementById("stop-detail")?.scrollIntoView({
         behavior: "smooth",
@@ -238,19 +275,40 @@ export function MapSection({ tourState }: MapSectionProps) {
           ...base,
           tourNumber: routeStops.findIndex((s) => s.id === stopId) + 1 || 1,
         };
+
+      if (!tourMode) {
+        setTourMode(true);
+        const idx = routeStops.findIndex((s) => s.id === stopId);
+        setCurrentIndex(idx >= 0 ? idx : 0);
+      }
       handleStopSelect(routeStop);
     },
-    [stops, routeStops, handleStopSelect, cityId, setCityId],
+    [stops, routeStops, handleStopSelect, cityId, setCityId, tourMode],
   );
 
-  const handleTourToggle = useCallback(() => {
-    setTourMode((prev) => {
-      if (prev) return false;
-      setCurrentIndex(0);
-      setSelectedStop(routeStops[0] ?? null);
-      return true;
+  const handleStartTour = useCallback(() => {
+    setCurrentIndex(0);
+    setSelectedStop(routeStops[0] ?? null);
+    setTourMode(true);
+    requestAnimationFrame(() => {
+      document.getElementById("tour")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
     });
   }, [routeStops]);
+
+  const handleEndTour = useCallback(() => {
+    setTourMode(false);
+    setSelectedStop(null);
+    setCurrentIndex(0);
+    requestAnimationFrame(() => {
+      document.getElementById("tour")?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+    });
+  }, []);
 
   const selectedIndex = selectedStop
     ? routeStops.findIndex((s) => s.id === selectedStop.id)
@@ -275,147 +333,188 @@ export function MapSection({ tourState }: MapSectionProps) {
     setTourMode(false);
   }, [resetProgress, clearPhotos]);
 
+  const cityLabel =
+    cityId === "cascais" ? t.cities.cascaisShort : t.cities.lisboaShort;
+  const tourTitle = t.tours[activeTour.id]?.title ?? t.tourMode.title;
+
+  const mapBlock = (
+    <div
+      className={
+        tourMode
+          ? "relative h-[48vh] min-h-[280px] sm:h-[50vh] sm:min-h-[300px] lg:col-span-7 lg:h-auto lg:min-h-[640px]"
+          : "relative h-[52vh] min-h-[300px] sm:h-[56vh] sm:min-h-[340px] lg:h-[70vh] lg:min-h-[520px]"
+      }
+    >
+      {mapReady ? (
+        <Suspense fallback={<MapLoading />}>
+          <TourMap
+            routeStops={routeStops}
+            tourType={tourType}
+            activeStopId={activeStopId}
+            visited={stampedRecord}
+            onStopSelect={handleStopSelect}
+            flyToStop={flyToStop}
+            resetKey={resetKey}
+            cityId={cityId}
+            mapCenter={city.center}
+          />
+        </Suspense>
+      ) : (
+        <MapLoading />
+      )}
+    </div>
+  );
+
   return (
     <section id="tour" className="border-b border-[color:var(--color-control-border)]">
-      <TourControls
-        cityId={cityId}
-        onCityChange={handleCityChange}
-        stampedIds={stampedIds}
-        tours={city.tours}
-        tourId={tourId}
-        onTourIdChange={handleTourIdChange}
-        routeReversed={routeReversed}
-        onRouteReversedChange={handleRouteReversedChange}
-        currentStartName={currentStartName}
-        tourStats={t.tours[activeTour.id]?.stats ?? ""}
-        isRiddleTour={isRiddleTour}
-        freeTour={freeTour}
-        onFreeTourToggle={toggleFreeTour}
-        tourMode={tourMode}
-        onTourModeToggle={handleTourToggle}
-        visitedCount={stampedInRoute}
-        totalStops={routeStops.length}
-        hideTourTabs={city.tours.length <= 1}
-      />
-
-      <div className="grid grid-cols-1 lg:min-h-[640px] lg:grid-cols-12">
-        <div className="relative h-[48vh] min-h-[280px] sm:h-[50vh] sm:min-h-[300px] lg:col-span-7 lg:h-auto lg:min-h-[640px]">
-          {mapReady ? (
-            <Suspense fallback={<MapLoading />}>
-              <TourMap
-                routeStops={routeStops}
-                tourType={tourType}
-                activeStopId={activeStopId}
-                visited={stampedRecord}
-                onStopSelect={handleStopSelect}
-                flyToStop={flyToStop}
-                resetKey={resetKey}
-                cityId={cityId}
-                mapCenter={city.center}
-              />
-            </Suspense>
-          ) : (
-            <MapLoading />
-          )}
-        </div>
-
-        <div className="flex min-h-0 flex-col border-t border-[color:var(--color-control-border)] bg-[color:var(--color-paper)] lg:col-span-5 lg:border-l lg:border-t-0">
-          {geoEnabled && (
-            <NextStopNavigator
-              nextStop={nextUnsolvedStop}
-              position={position}
-              geoError={geoError}
-            />
-          )}
-
-          <div className="flex min-h-0 flex-1 flex-col">
-            {selectedStop ? (
-              <StopDetail
-                stop={selectedStop}
-                tourType={tourType}
-                solvedIds={solvedIds}
-                stampedIds={stampedIds}
-                isUnlocked={selectedUnlocked}
-                canMarkDone={!isRiddleTour || freeTour}
-                photoDataUrl={photos[selectedStop.id] ?? null}
-                photoBusy={busyStopId === selectedStop.id}
-                onAttachPhoto={attachPhoto}
-                onRemovePhoto={removePhoto}
-                currentIndex={selectedIndex >= 0 ? selectedIndex : 0}
-                totalStops={routeStops.length}
-                onSubmitAnswer={submitAnswer}
-                onToggleVisited={
-                  !isRiddleTour || freeTour ? toggleVisited : undefined
-                }
-                onNext={handleDetailNext}
-                canNext={
-                  selectedIndex >= 0 && selectedIndex < routeStops.length - 1
-                }
-                onClose={handleCloseDetail}
-              />
-            ) : (
-              <StopList
-                routeStops={routeStops}
-                activeStopId={activeStopId}
-                stampedIds={stampedIds}
-                solvedIds={solvedIds}
-                tourMode={tourMode}
-                tourType={tourType}
-                freeTour={freeTour}
-                currentIndex={currentIndex}
-                onStopClick={handleStopClick}
-                onToggleVisited={
-                  !isRiddleTour || freeTour ? toggleVisited : undefined
-                }
-              />
-            )}
-          </div>
-        </div>
-      </div>
-
-      <WorkspaceTabs
-        revealProtocolSignal={protocolRevealSignal}
-        protocol={
-          <Laufzettel
-            tourType={tourType}
-            routeStops={routeStops}
+      {!tourMode ? (
+        <>
+          <TourControls
             cityId={cityId}
-            solved={solved}
-            visited={visited}
-            photos={photos}
-            animatingId={animatingId}
-            completionAnimating={completionAnimating}
-            allFoodComplete={allFoodComplete}
-            globalSightedCount={globalSightedCount}
-            totalStopCount={totalStopCount}
-            allCitiesComplete={allCitiesComplete}
-            onCompletionShown={triggerCompletionAnimation}
-            onShare={shareProgress}
-            onReset={handleResetProgress}
-            onNavigateToStop={handleNavigateToStop}
+            onCityChange={handleCityChange}
+            stampedIds={stampedIds}
+            tours={city.tours}
+            tourId={tourId}
+            onTourIdChange={handleTourIdChange}
+            routeReversed={routeReversed}
+            onRouteReversedChange={handleRouteReversedChange}
+            currentStartName={currentStartName}
+            tourStats={t.tours[activeTour.id]?.stats ?? ""}
+            isRiddleTour={isRiddleTour}
+            freeTour={freeTour}
+            onFreeTourToggle={toggleFreeTour}
+            onTourModeToggle={handleStartTour}
+            hideTourTabs={city.tours.length <= 1}
           />
-        }
-        food={
-          <div className="flex flex-col gap-4">
-            <div className="file-card p-4 sm:p-5">
-              <HenriksSpeisekarte
-                foodChecked={foodChecked}
-                onToggleFood={toggleFood}
-                onNavigateToStop={handleNavigateToStop}
-                cityId={cityId}
-              />
-            </div>
-            <GastroGuide cityId={cityId} />
+
+          {mapBlock}
+
+          <div className="mx-auto max-w-6xl px-4 py-4 sm:px-6">
+            <p className="meta-mono text-[11px] tracking-normal text-[color:var(--color-pencil)]">
+              {format(t.direction.startAt, { name: currentStartName })}
+              {" · "}
+              {format(t.stopList.entriesHint, {
+                count: String(routeStops.length).padStart(2, "0"),
+              })}
+            </p>
           </div>
-        }
-        notes={
-          <InvestigatorNotes
-            notes={notes}
-            onChange={setNotes}
-            onShare={shareProgress}
+        </>
+      ) : (
+        <>
+          <ActiveTourBar
+            tourTitle={tourTitle}
+            cityLabel={cityLabel}
+            visitedCount={stampedInRoute}
+            totalStops={routeStops.length}
+            currentIndex={currentIndex}
+            isRiddleTour={isRiddleTour}
+            freeTour={freeTour}
+            onFreeTourToggle={toggleFreeTour}
+            onEndTour={handleEndTour}
           />
-        }
-      />
+
+          <div className="grid grid-cols-1 lg:min-h-[640px] lg:grid-cols-12">
+            {mapBlock}
+
+            <div className="flex min-h-0 flex-col border-t border-[color:var(--color-control-border)] bg-[color:var(--color-paper)] lg:col-span-5 lg:border-l lg:border-t-0">
+              {geoEnabled && (
+                <NextStopNavigator
+                  nextStop={nextUnsolvedStop}
+                  position={position}
+                  geoError={geoError}
+                />
+              )}
+
+              <div className="flex min-h-0 flex-1 flex-col">
+                {selectedStop ? (
+                  <StopDetail
+                    stop={selectedStop}
+                    tourType={tourType}
+                    solvedIds={solvedIds}
+                    stampedIds={stampedIds}
+                    isUnlocked={selectedUnlocked}
+                    canMarkDone={!isRiddleTour || freeTour}
+                    photoDataUrl={photos[selectedStop.id] ?? null}
+                    photoBusy={busyStopId === selectedStop.id}
+                    onAttachPhoto={attachPhoto}
+                    onRemovePhoto={removePhoto}
+                    currentIndex={selectedIndex >= 0 ? selectedIndex : 0}
+                    totalStops={routeStops.length}
+                    onSubmitAnswer={submitAnswer}
+                    onToggleVisited={
+                      !isRiddleTour || freeTour ? toggleVisited : undefined
+                    }
+                    onNext={handleDetailNext}
+                    canNext={
+                      selectedIndex >= 0 && selectedIndex < routeStops.length - 1
+                    }
+                    onClose={handleCloseDetail}
+                  />
+                ) : (
+                  <StopList
+                    routeStops={routeStops}
+                    activeStopId={activeStopId}
+                    stampedIds={stampedIds}
+                    solvedIds={solvedIds}
+                    tourMode={false}
+                    tourType={tourType}
+                    freeTour={freeTour}
+                    currentIndex={currentIndex}
+                    onStopClick={handleStopClick}
+                    onToggleVisited={
+                      !isRiddleTour || freeTour ? toggleVisited : undefined
+                    }
+                  />
+                )}
+              </div>
+            </div>
+          </div>
+
+          <WorkspaceTabs
+            revealProtocolSignal={protocolRevealSignal}
+            protocol={
+              <Laufzettel
+                tourType={tourType}
+                routeStops={routeStops}
+                cityId={cityId}
+                solved={solved}
+                visited={visited}
+                photos={photos}
+                animatingId={animatingId}
+                completionAnimating={completionAnimating}
+                allFoodComplete={allFoodComplete}
+                globalSightedCount={globalSightedCount}
+                totalStopCount={totalStopCount}
+                allCitiesComplete={allCitiesComplete}
+                onCompletionShown={triggerCompletionAnimation}
+                onShare={shareProgress}
+                onReset={handleResetProgress}
+                onNavigateToStop={handleNavigateToStop}
+              />
+            }
+            food={
+              <div className="flex flex-col gap-4">
+                <div className="file-card p-4 sm:p-5">
+                  <HenriksSpeisekarte
+                    foodChecked={foodChecked}
+                    onToggleFood={toggleFood}
+                    onNavigateToStop={handleNavigateToStop}
+                    cityId={cityId}
+                  />
+                </div>
+                <GastroGuide cityId={cityId} />
+              </div>
+            }
+            notes={
+              <InvestigatorNotes
+                notes={notes}
+                onChange={setNotes}
+                onShare={shareProgress}
+              />
+            }
+          />
+        </>
+      )}
     </section>
   );
 }

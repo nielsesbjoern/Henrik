@@ -8,6 +8,7 @@ import { CategoryBadge } from "./CategoryBadge";
 import { StopQuoteBlock } from "./StopQuote";
 import { RiddlePanel } from "./RiddlePanel";
 import { EvidencePhoto } from "./EvidencePhoto";
+import { StopPlacePhoto } from "./StopPlacePhoto";
 import { StopStamp } from "./StopStamp";
 import { useI18n } from "../i18n";
 
@@ -182,6 +183,8 @@ export function StopDetail({
                 <span>{stop.bookRef.toUpperCase()}</span>
               </div>
             </article>
+
+            <StopPlacePhoto stopId={stop.id} placeName={stop.name} />
 
             <p className="book-prose mt-5 text-[1.05rem] leading-[1.65] text-[color:var(--color-ink)]">
               {stop.description}

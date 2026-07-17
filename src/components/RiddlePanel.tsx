@@ -54,14 +54,14 @@ export function RiddlePanel({ riddle, solved, onSubmit }: RiddlePanelProps) {
           }}
           placeholder={t.riddle.inputLabel}
           aria-label={t.riddle.inputLabel}
-          className="meta-mono min-w-0 flex-1 border border-[color:var(--color-control-border)] bg-[color:var(--color-paper)] px-3 py-2 text-xs text-ink"
+          className="meta-mono min-h-11 min-w-0 flex-1 border border-[color:var(--color-control-border)] bg-[color:var(--color-paper)] px-3 py-2 text-xs text-ink"
           autoComplete="off"
           autoCapitalize="off"
         />
         <button
           type="submit"
           disabled={!input.trim()}
-          className="meta-mono shrink-0 border border-[color:var(--color-ink)] bg-[color:var(--color-ink)] px-4 py-2 text-xs text-[color:var(--color-paper)] transition disabled:cursor-not-allowed disabled:opacity-40"
+          className="meta-mono min-h-11 shrink-0 border border-[color:var(--color-ink)] bg-[color:var(--color-ink)] px-4 py-2 text-xs text-[color:var(--color-paper)] transition disabled:cursor-not-allowed disabled:opacity-40"
         >
           {t.riddle.check}
         </button>

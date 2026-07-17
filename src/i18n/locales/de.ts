@@ -121,6 +121,7 @@ export const de: Translations = {
     geoDenied: "Standortzugriff verweigert.",
     geoFailed: "Standort konnte nicht ermittelt werden.",
     fullTourGoogleMaps: "Tour in Google Maps",
+    legComplete: "Komplette Tour (alle {count} Stopps)",
     legPart: "Etappe {index} (Stopps {from}–{to})",
     scrollZoomHint: "Karte anklicken, dann mit Mausrad zoomen",
     fitRoute: "Route zentrieren",
@@ -144,6 +145,8 @@ export const de: Translations = {
     startTour: "Tour starten",
     back: "Zurück",
     next: "Weiter",
+    activeEyebrow: "Unterwegs",
+    overviewLead: "Stadt und Route wählen, die Karte grob prüfen — dann die Tour starten.",
   },
   routeToggle: {
     label: "ROUTENAUSWAHL",
@@ -171,7 +174,7 @@ export const de: Translations = {
         "Die Essentials in zweieinhalb Stunden: Antiquariat, Chiado, Rossio, Baixa — Finale mit Blick über die Alfama.",
     },
     "lisboa-raetsel": {
-      title: "SCHNITZELJAGD",
+      title: "SCHNITZEL\u00ADJAGD",
       stops: "9 FUNDORTE",
       stats: "~4 km · mit Rätseln",
       heroText:
@@ -194,7 +197,7 @@ export const de: Translations = {
   },
   playMode: {
     label: "SPIELMODUS",
-    riddle: "Schnitzeljagd",
+    riddle: "Schnitzel\u00ADjagd",
     free: "Freie Tour",
     ariaLabel: "Spielmodus wählen",
   },
@@ -259,6 +262,9 @@ export const de: Translations = {
     showQuote: "Zitat aus dem Buch",
     fictionalPlaceNote:
       "FIKTIVER ORT — Lage gemäß Romankarte, keine reale Adresse",
+    photoAlt: "Ort: {name}",
+    photoCredit: "Foto: {credit} · {license}",
+    photoAtmosphere: "Umgebung",
   },
   categories: {
     buchszene: "Echte Buchszene",
